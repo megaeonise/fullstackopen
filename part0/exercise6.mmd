@@ -6,6 +6,8 @@ sequenceDiagram
 
     browser->>server: POST https://studies.cs.helsinki.fi/exampleapp/new_note_spa
     activate server
+    server->>+server: notes.push(content: input, date: new Date())
+    server-->>-browser: HTTP status code 201
     deactivate server
 
    
