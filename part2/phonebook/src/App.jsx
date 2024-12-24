@@ -17,12 +17,17 @@ const App = () => {
   const addName = (event) => {
     event.preventDefault()
     console.log(persons.length)
-    const entry = { name: newName, number: newNumber, id: persons.length+1}
+    const entry = { name: newName, number: newNumber, id: (persons.length+1).toString()}
     if(persons.map(person=>person.name).includes(newName)){
       alert(`${newName} is already added to phonebook`)
     }
     else{
       setPersons(persons.concat(entry))
+      axios
+      .post('http://localhost:3001/persons', entry)
+      .then(response => {
+        console.log(response)
+      })
       setNewName('')
       setNewNumber('')
     }
