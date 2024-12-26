@@ -8,26 +8,41 @@ const App = () => {
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber] = useState('')
   const [query, setQuery] = useState('')
-  const [remove, setRemove] = useState('')
   
 
   useEffect(() => {
     phonebookService
     .getAll()
     .then(response => {setPersons(response.data)})
+    console.log(persons, 'd')
   }, [])
 
   const addName = (event) => {
     event.preventDefault()
-    console.log(persons.length)
-    let entry = { name: newName, number: newNumber, id: (persons.length+1).toString()}
+    let next_id = Math.max(...persons.map(person => Number(person.id)))
+    if(next_id===-Infinity){
+      next_id = 0
+    }
+    else{
+      next_id +=1 
+    }
+    let entry = { name: newName, number: newNumber, id: next_id.toString()}
     if(persons.map(person=>person.name).includes(newName)){
       const matched = persons.find(person=> person.name===newName)
       entry = { name: matched.name, number: newNumber, id: matched.id}
-      console.log(entry)
+      console.log('old', persons)
       if(window.confirm(`${newName} is already added to phonebook, replace the old number with a new one?`)){
         phonebookService
         .update(matched.id, entry)
+        .then(response => {
+          console.log(response)
+        }
+      )
+        .catch(error => {
+          alert('The entry to be updated has already been deleted')
+          console.log(persons)
+          setPersons(persons.filter(person => person.id !== matched.id))
+        })
         setNewName('')
         setNewNumber('')
       }
@@ -38,11 +53,11 @@ const App = () => {
       .create(entry)
       .then(response => {
         console.log(response)
+        setNewName('')
+        setNewNumber('')
       })
-      setNewName('')
-      setNewNumber('')
     }
-    
+    console.log('test', persons)
   }
   
   const handleNameChange = (event) => {
@@ -57,6 +72,7 @@ const App = () => {
   const handleQuery = (event) => {
     console.log(event.target.value)
     setQuery(event.target.value)
+    console.log(persons)
   }
 
   return (
