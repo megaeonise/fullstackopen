@@ -2,19 +2,21 @@ import { useState, useEffect } from 'react'
 import Result from './components/Result'
 import NameForm from './components/NameForm'
 import phonebookService from './services/persons'
+import Message from './components/Message'
 
 const App = () => {
   const [persons, setPersons] = useState([])
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber] = useState('')
   const [query, setQuery] = useState('')
+  const [msg, setMsg] = useState(null)
+  const [isError, setIsError] = useState(false)
   
 
   useEffect(() => {
     phonebookService
     .getAll()
     .then(response => {setPersons(response.data)})
-    console.log(persons, 'd')
   }, [])
 
   const addName = (event) => {
@@ -35,11 +37,21 @@ const App = () => {
         phonebookService
         .update(matched.id, entry)
         .then(response => {
+          let temp = newName
           console.log(response)
+          setMsg(`Updated ${temp}'s number`)
+          setIsError(false)
+          setTimeout(() => {
+            setMsg(null)     
+          }, 5000)
         }
       )
         .catch(error => {
-          alert('The entry to be updated has already been deleted')
+          setMsg('The entry to be updated has already been deleted')
+          setIsError(true)
+          setTimeout(() => {
+            setMsg(null)     
+          }, 5000)
           console.log(persons)
           setPersons(persons.filter(person => person.id !== matched.id))
         })
@@ -53,11 +65,16 @@ const App = () => {
       .create(entry)
       .then(response => {
         console.log(response)
-        setNewName('')
-        setNewNumber('')
+        let temp = newName
+        setMsg(`Added ${temp}`)
+        setIsError(false)
+        setTimeout(() => {
+          setMsg(null)     
+        }, 5000)
       })
+      setNewName('')
+      setNewNumber('')
     }
-    console.log('test', persons)
   }
   
   const handleNameChange = (event) => {
@@ -75,14 +92,20 @@ const App = () => {
     console.log(persons)
   }
 
+  const handleRemove = (message) => {
+    setIsError(false)
+    setMsg(message)
+  }
+  console.log(msg)
   return (
     <div>
       <h2>Phonebook</h2>
+      <Message message={msg} isError={isError}/>
       <div>filter shown with <input value={query} onChange={handleQuery} /></div>
       <h2>add a new</h2>
       <NameForm addName={addName} newName={newName} handleNameChange={handleNameChange} newNumber={newNumber} handleNumberChange={handleNumberChange}/>
       <h2>Numbers</h2>
-      <Result persons={persons} query={query}/>
+      <Result persons={persons} query={query} handleRemove={handleRemove}/>
     </div>
   )
 }

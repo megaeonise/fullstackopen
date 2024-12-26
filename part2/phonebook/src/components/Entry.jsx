@@ -8,7 +8,9 @@ const Entry = (props) => {
         return (
             phonebookService
         .remove(person.id)
-        .then(setPerson(''))
+        .then(setPerson(''),
+        props.handleRemove(`${props.name}'s entry has been deleted`)
+    )
         )
     }
 
