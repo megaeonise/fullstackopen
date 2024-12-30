@@ -14,9 +14,14 @@ const App = () => {
     console.log(event.target.value)
     setFilter(event.target.value)
   }
+
+  const handleShow = (country) => {
+    console.log(country, 'test')
+    setFilter(country.name.common)
+  }
   return <div>
     <div> find countries <input value={filter} onChange={handleFilter}/> </div>
-    <Display countries={countries} filter={filter}/>
+    <Display countries={countries} filter={filter} handleShow={handleShow}/>
     
     </div>
 }
