@@ -1,4 +1,5 @@
 const express = require('express')
+const morgan = require('morgan')
 const app = express()
 
 app.use(express.json())
@@ -26,23 +27,26 @@ let persons = [
   }
 ]
 
-  
+const handleData = () => {}
+
+morgan.token('data', function (req, res) {return JSON.stringify(req.body)})
+
+app.use(morgan(':method :url :status :response-time :data'))
+
 app.get('/api/persons', (req, res) => {
+  console.log(req.body)
+  console.log(JSON.stringify(req.body))
   res.json(persons)
 })
 
 app.post('/api/persons', (req, res) => {
   const id = Math.floor(Math.random() * 10000)
-  console.log(id)
   const {name, number} = req.body
-  const error = persons.find(person => person.name === name)
   if(persons.find(person => person.name === name)){
-    console.log('?')
     res.send('name must be unique')
   }
   else if(name && number){
     const person = {id, name, number}
-    console.log(person)
     res.json(person)
   }
   else if(!name && !number){
