@@ -28,20 +28,19 @@ let persons = [
 ]
 
 const handleData = () => {}
-
-morgan.token('data', function (req, res) {return JSON.stringify(req.body)})
+let data = '{No HTTP Post Request Data}'
+morgan.token('data', function (req, res) {return data})
 
 app.use(morgan(':method :url :status :response-time :data'))
 
 app.get('/api/persons', (req, res) => {
-  console.log(req.body)
-  console.log(JSON.stringify(req.body))
   res.json(persons)
 })
 
 app.post('/api/persons', (req, res) => {
   const id = Math.floor(Math.random() * 10000)
   const {name, number} = req.body
+  data = JSON.stringify(req.body)
   if(persons.find(person => person.name === name)){
     res.send('name must be unique')
   }
