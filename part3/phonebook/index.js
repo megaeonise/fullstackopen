@@ -53,7 +53,6 @@ app.get('/api/persons', (req, res) => {
 // })
 
 app.post('/api/persons', (req, res) => {
-  const id = Math.floor(Math.random() * 10000)
   const {name, number} = req.body
   data = JSON.stringify(req.body)
   // Person.find({}).then(result => {const person = result}) tried to find duplicate name
@@ -64,7 +63,6 @@ app.post('/api/persons', (req, res) => {
   //else if(name && number){
   if(name && number){
     const person = new Person({
-      id: id,
       name: name,
       number: number
     })
@@ -93,17 +91,38 @@ app.get('/info', (req, res) => {
   res.send(`Phonebook has info for ${entry_num} people <br> ${today}`)
 }) 
 
-app.get('/api/persons/:id', (req, res) => {
-  const id = req.params.id
-  const person =  persons.find(person => person.id === id)
-  res.json(person)
+app.get('/api/persons/:id', (req, res, next) => {
+  Person.findById(req.params.id)
+  .then(person=> {
+    if(person){
+      res.json(person)
+    }
+    else{
+      res.status(404).end()
+    }
+  })
+  .catch(error=> next(error))
 })
 
-app.delete('/api/persons/:id', (req, res) => {
-  const id = req.params.id
-  persons = persons.filter(person => person.id !== id)
-  res.status(204).end()
+app.delete('/api/persons/:id', (req, res, next) => {
+  console.log(req)
+  Person.findByIdAndDelete(req.params.id)
+  .then(result=>{
+    console.log(result)
+    res.status(204).end()
+  })
+  .catch(error=>next(error))
 })
+
+const errorHandler = (error, req, res, next) => {
+  console.error(error.message)
+  if (error.name === 'CastError') {
+    res.status(400).send({error: 'malformatted id'})
+  }
+  next(error)
+}
+
+app.use(errorHandler)
 
 const PORT = process.env.PORT
 app.listen(PORT, () => {

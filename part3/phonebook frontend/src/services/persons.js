@@ -1,5 +1,5 @@
 import axios from 'axios'
-const baseUrl = 'https://phonebook-dawn-smoke-4110.fly.dev/api/persons'
+const baseUrl = 'http://localhost:3001/api/persons'
 
 
 const getAll = () => {
