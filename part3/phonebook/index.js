@@ -1,5 +1,6 @@
 const express = require('express')
 const morgan = require('morgan')
+require('dotenv').config()
 
 
 const app = express()
@@ -55,12 +56,22 @@ app.post('/api/persons', (req, res) => {
   const id = Math.floor(Math.random() * 10000)
   const {name, number} = req.body
   data = JSON.stringify(req.body)
-  if(persons.find(person => person.name === name)){
-    res.send('name must be unique')
-  }
-  else if(name && number){
-    const person = {id, name, number}
-    res.json(person)
+  // Person.find({}).then(result => {const person = result}) tried to find duplicate name
+  
+  // if(result.find(person => person.name === name)){
+  //   res.send('name must be unique')
+  // }
+  //else if(name && number){
+  if(name && number){
+    const person = new Person({
+      id: id,
+      name: name,
+      number: number
+    })
+    console.log(person)
+    person.save().then(savedPerson=> {
+      res.json(savedPerson)
+    })
   }
   else if(!name && !number){
     res.send('name and number is missing')
@@ -94,7 +105,7 @@ app.delete('/api/persons/:id', (req, res) => {
   res.status(204).end()
 })
 
-const PORT = 3001
+const PORT = process.env.PORT
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`)
 })
