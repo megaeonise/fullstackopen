@@ -55,18 +55,16 @@ app.get('/api/persons', (req, res) => {
 app.post('/api/persons', (req, res) => {
   const {name, number} = req.body
   data = JSON.stringify(req.body)
-  // Person.find({}).then(result => {const person = result}) tried to find duplicate name
-  
-  // if(result.find(person => person.name === name)){
-  //   res.send('name must be unique')
-  // }
-  //else if(name && number){
+  // Person.find({})
+  // .then(result => {if(result.find(person => person.name === name)){
+  //     res.send('name must be unique')
+  //   }
+  // }) //tried to find duplicate name
   if(name && number){
     const person = new Person({
       name: name,
       number: number
     })
-    console.log(person)
     person.save().then(savedPerson=> {
       res.json(savedPerson)
     })
@@ -87,8 +85,11 @@ app.post('/api/persons', (req, res) => {
 
 app.get('/info', (req, res) => {
   const today = new Date()
-  const entry_num = persons.length
-  res.send(`Phonebook has info for ${entry_num} people <br> ${today}`)
+  Person.find({}).then(result=> {
+    const entry_num = result.length
+    res.send(`Phonebook has info for ${entry_num} people <br> ${today}`)
+  })
+  
 }) 
 
 app.get('/api/persons/:id', (req, res, next) => {
@@ -104,11 +105,23 @@ app.get('/api/persons/:id', (req, res, next) => {
   .catch(error=> next(error))
 })
 
+app.put('/api/persons/:id', (req, res, next) => {
+  const {name, number} = req.body
+  const person = {
+    name: name,
+    number: number,
+  }
+
+  Person.findByIdAndUpdate(req.params.id, person, { new:true })
+  .then(updatedPerson => {
+    res.json(updatedPerson)
+  })
+  .catch(error => next(error))
+})
+
 app.delete('/api/persons/:id', (req, res, next) => {
-  console.log(req)
   Person.findByIdAndDelete(req.params.id)
   .then(result=>{
-    console.log(result)
     res.status(204).end()
   })
   .catch(error=>next(error))
