@@ -1,8 +1,11 @@
 const express = require('express')
 const morgan = require('morgan')
 const app = express()
+const cors = require('cors')
 
+app.use(cors())
 app.use(express.json())
+app.use(express.static('dist'))
 
 let persons = [
   { 
@@ -27,7 +30,6 @@ let persons = [
   }
 ]
 
-const handleData = () => {}
 let data = '{No HTTP Post Request Data}'
 morgan.token('data', function (req, res) {return data})
 
@@ -36,6 +38,10 @@ app.use(morgan(':method :url :status :response-time :data'))
 app.get('/api/persons', (req, res) => {
   res.json(persons)
 })
+
+// app.get('/', (req, res) => {
+//   res.send('Hi')
+// })
 
 app.post('/api/persons', (req, res) => {
   const id = Math.floor(Math.random() * 10000)
