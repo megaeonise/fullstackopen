@@ -12,12 +12,12 @@ const App = () => {
   const [msg, setMsg] = useState(null)
   const [isError, setIsError] = useState(false)
   
-
   useEffect(() => {
     phonebookService
     .getAll()
     .then(response => {setPersons(response.data)})
-  }, [])
+  }, [msg])
+  console.log(persons)
 
   const addName = (event) => {
     event.preventDefault()
@@ -47,7 +47,8 @@ const App = () => {
         }
       )
         .catch(error => {
-          setMsg('The entry to be updated has already been deleted')
+          console.log(error, 'this is meant to be the error')
+          setMsg(error.response.data.error)
           setIsError(true)
           setTimeout(() => {
             setMsg(null)     
@@ -57,10 +58,11 @@ const App = () => {
         })
         setNewName('')
         setNewNumber('')
+        console.log(persons, 'at end of replace or delete')
       }
     }
     else{
-      setPersons(persons.concat(entry))
+      let temp = persons
       phonebookService  
       .create(entry)
       .then(response => {
@@ -71,10 +73,22 @@ const App = () => {
         setTimeout(() => {
           setMsg(null)     
         }, 5000)
+        // setPersons(persons.concat(entry))
+      })
+      .catch(error=> {
+        console.log(error.response.data.error)
+        setIsError(true)
+        setMsg(error.response.data.error)
+        setTimeout(() => {
+          setMsg(null)
+          setIsError(false)     
+        }, 5000)
+        setPersons(temp)
       })
       setNewName('')
       setNewNumber('')
     }
+    console.log(persons, 'at end of addname')
   }
   
   const handleNameChange = (event) => {
@@ -92,11 +106,13 @@ const App = () => {
     console.log(persons)
   }
 
-  const handleRemove = (message) => {
+  const handleRemove = (message, p) => {
+    console.log(persons, 'before')
     setIsError(false)
     setMsg(message)
+    setPersons(persons.filter(person => person.name !== p))
   }
-  console.log(msg)
+  console.log(persons)
   return (
     <div>
       <h2>Phonebook</h2>
