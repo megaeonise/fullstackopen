@@ -17,7 +17,6 @@ const App = () => {
     .getAll()
     .then(response => {setPersons(response.data)})
   }, [msg])
-  console.log(persons)
 
   const addName = (event) => {
     event.preventDefault()
@@ -38,12 +37,21 @@ const App = () => {
         .update(matched.id, entry)
         .then(response => {
           let temp = newName
-          console.log(response)
-          setMsg(`Updated ${temp}'s number`)
-          setIsError(false)
-          setTimeout(() => {
+          console.log(response.data)
+          if(response.data===null){
+            setMsg('The entry to be updated has already been deleted')
+            setIsError(true)
+            setTimeout(()=> {
+              setMsg(null)
+            }, 5000)
+          }
+          else{
+            setMsg(`Updated ${temp}'s number`)
+            setIsError(false)
+            setTimeout(() => {
             setMsg(null)     
           }, 5000)
+          }
         }
       )
         .catch(error => {
@@ -66,13 +74,22 @@ const App = () => {
       phonebookService  
       .create(entry)
       .then(response => {
-        console.log(response)
+        console.log(response.data)
         let temp = newName
-        setMsg(`Added ${temp}`)
-        setIsError(false)
-        setTimeout(() => {
+        if(typeof response.data==='string'){
+          setMsg(response.data)
+          setIsError(true)
+          setTimeout(()=> {
+            setMsg(null)
+          }, 5000)
+        }
+        else{
+          setMsg(`Added ${temp}`)
+          setIsError(false)
+          setTimeout(() => {
           setMsg(null)     
         }, 5000)
+        }
         // setPersons(persons.concat(entry))
       })
       .catch(error=> {
