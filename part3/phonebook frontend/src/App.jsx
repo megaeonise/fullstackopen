@@ -17,7 +17,7 @@ const App = () => {
     .getAll()
     .then(response => {setPersons(response.data)})
   }, [msg])
-
+  console.log(persons)
   const addName = (event) => {
     event.preventDefault()
     let next_id = Math.max(...persons.map(person => Number(person.id)))
@@ -51,6 +51,7 @@ const App = () => {
             setTimeout(() => {
             setMsg(null)     
           }, 5000)
+            setPersons(persons.map(person=> person===matched ? person='matched' : person='notmatched'))
           }
         }
       )
