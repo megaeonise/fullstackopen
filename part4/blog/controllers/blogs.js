@@ -12,12 +12,14 @@ blogsRouter.get('/blogs', async (request, response, next) => {
 })
 
 blogsRouter.post('/blogs', async (request, response, next) => {
+  console.log(request.body, 'is this okay')
   const blog = new Blog(request.body)
   try {
-  await blog.save()
+  result = await blog.save()
   response.status(201).json(result)
   }
   catch(exception) {
+    console.log(exception)
     next(exception)
   }
 })
