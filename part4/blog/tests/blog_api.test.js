@@ -4,6 +4,8 @@ const supertest = require('supertest')
 const assert = require('node:assert')
 const app = require('../app')
 const Blog = require('../models/blog')
+const { error, info } = require('node:console')
+
 
 const api = supertest(app)
 
@@ -11,7 +13,7 @@ const initialBlogs = [
     {
         title: 'test',
         author: '',
-        url: '',
+        url: 'test.com',
         likes: 0
     },
     {
@@ -23,11 +25,16 @@ const initialBlogs = [
 ]
 
 beforeEach(async () => {
+    try {
     await Blog.deleteMany({})
     let newBlog = new Blog(initialBlogs[0])
     await newBlog.save()
     newBlog = new Blog(initialBlogs[1])
     await newBlog.save()
+    } catch(exception) {
+       console.log('?')
+    }
+    
 })
 
 test('the correct number of blogs are returned as json', async () => {
@@ -40,7 +47,7 @@ test('the correct number of blogs are returned as json', async () => {
 
 test('the unique identifier of the blog posts is named id', async () => {
     const response = await api.get('/api/blogs')
-    console.log(response.body)
+    info(response.body)
     const ids = response.body.map(r=>r.id)
     assert.strictEqual(response.body.length, ids.length)
 })
@@ -92,6 +99,25 @@ test('likes defaults to 0 if likes is missing', async () => {
     assert.strictEqual(response.body.length, initialBlogs.length+1)
     const index = titles.indexOf('test...')
     assert.strictEqual(likes[index], 0)
+})
+
+test('400 bad request returned if title and url are missing', async () => {
+    const newBlog = {
+        title: '',
+        author: 'BTEST',
+        url: '',
+        likes: 21023
+      }
+    
+    const request = await api
+    .post('/api/blogs')
+    .send(newBlog)
+    .expect(400)
+
+    assert.strictEqual(request.status, 400)
+    assert.strictEqual(request.text ,'{"error":"Bad Request"}')
+
+
 })
 
 after(async () => {
