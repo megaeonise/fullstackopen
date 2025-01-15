@@ -38,88 +38,115 @@ beforeEach(async () => {
     await Promise.all(promiseArray)
 })
 
-test('the correct number of blogs are returned as json', async () => {
-    response = await api.get('/api/blogs')
-    .expect(200)
-    .expect('Content-Type', /application\/json/)
-    assert.strictEqual(response.body.length, initialBlogs.length)
-})
+describe('when there are some blogs saved initially', () => {
+    test('the correct number of blogs are returned as json', async () => {
+        response = await api.get('/api/blogs')
+        .expect(200)
+        .expect('Content-Type', /application\/json/)
+        assert.strictEqual(response.body.length, initialBlogs.length)
+    })
 
 
-test('the unique identifier of the blog posts is named id', async () => {
-    const response = await api.get('/api/blogs')
-    const ids = response.body.map(r=>r.id)
-    assert.strictEqual(response.body.length, ids.length)
-})
+    test('the unique identifier of the blog posts is named id', async () => {
+        const response = await api.get('/api/blogs')
+        const ids = response.body.map(r=>r.id)
+        assert.strictEqual(response.body.length, ids.length)
+    })
 
-test('a valid blog can be added', async () => {
-    const newBlog = {
-        title: 'radiance...',
-        author: 'BRANDON SANDERSON',
-        url: 'twokmatrix.com',
-        likes: 12314583
-      }
-    
-    await api
-    .post('/api/blogs')
-    .send(newBlog)
-    .expect(201)
-    .expect('Content-Type', /application\/json/)
+    test('a valid blog can be added', async () => {
+        const newBlog = {
+            title: 'radiance...',
+            author: 'BRANDON SANDERSON',
+            url: 'twokmatrix.com',
+            likes: 12314583
+        }
+        
+        await api
+        .post('/api/blogs')
+        .send(newBlog)
+        .expect(201)
+        .expect('Content-Type', /application\/json/)
 
-    const response = await api.get('/api/blogs')
-    const titles = response.body.map(r=>r.title)
-    const authors = response.body.map(r=>r.author)
-    const urls = response.body.map(r=>r.url)
-    const likes = response.body.map(r=>r.likes)
+        const response = await api.get('/api/blogs')
+        const titles = response.body.map(r=>r.title)
+        const authors = response.body.map(r=>r.author)
+        const urls = response.body.map(r=>r.url)
+        const likes = response.body.map(r=>r.likes)
+        const blogObject = {
+            title: titles,
+            author: authors,
+            url: urls,
+            likes: likes
+        }
+        assert.strictEqual(response.body.length, initialBlogs.length+1)
+        Object.keys(newBlog).forEach((key) => assert(blogObject[key].includes(newBlog[key])))
+    })
 
-    assert.strictEqual(response.body.length, initialBlogs.length+1)
-    assert(titles.includes('radiance...'))
-    assert(authors.includes('BRANDON SANDERSON'))
-    assert(urls.includes('twokmatrix.com'))
-    assert(likes.includes(12314583))
-})
+    test('likes defaults to 0 if likes is missing', async () => {
+        const newBlog = {
+            title: 'test...',
+            author: 'BTEST',
+            url: 'test.com',
+        }
+        
+        await api
+        .post('/api/blogs')
+        .send(newBlog)
+        .expect(201)
+        .expect('Content-Type', /application\/json/)
 
-test('likes defaults to 0 if likes is missing', async () => {
-    const newBlog = {
-        title: 'test...',
-        author: 'BTEST',
-        url: 'test.com',
-      }
-    
-    await api
-    .post('/api/blogs')
-    .send(newBlog)
-    .expect(201)
-    .expect('Content-Type', /application\/json/)
+        const response = await api.get('/api/blogs')
+        const titles = response.body.map(r=>r.title)
+        const likes = response.body.map(r=>r.likes)
 
-    const response = await api.get('/api/blogs')
-    const titles = response.body.map(r=>r.title)
-    const likes = response.body.map(r=>r.likes)
+        assert.strictEqual(response.body.length, initialBlogs.length+1)
+        const index = titles.indexOf('test...')
+        assert.strictEqual(likes[index], 0)
+    })
 
-    assert.strictEqual(response.body.length, initialBlogs.length+1)
-    const index = titles.indexOf('test...')
-    assert.strictEqual(likes[index], 0)
-})
+    test('400 bad request returned if title and url are missing', async () => {
+        const newBlog = {
+            title: '',
+            author: 'BTEST',
+            url: '',
+            likes: 21023
+        }
+        
+        const request = await api
+        .post('/api/blogs')
+        .send(newBlog)
+        .expect(400)
 
-test('400 bad request returned if title and url are missing', async () => {
-    const newBlog = {
-        title: '',
-        author: 'BTEST',
-        url: '',
-        likes: 21023
-      }
-    
-    const request = await api
-    .post('/api/blogs')
-    .send(newBlog)
-    .expect(400)
+        assert.strictEqual(request.status, 400)
+        assert.strictEqual(request.text ,'{"error":"Bad Request"}')
+    })
 
-    assert.strictEqual(request.status, 400)
-    assert.strictEqual(request.text ,'{"error":"Bad Request"}')
+    test('a blog can be deleted', async () => {
+        let response = await api.get('/api/blogs')
+        const id = response.body[0].id
+        const no_of_blogs = response.body.length
+        await api.delete(`/api/blogs/${id}`)
+        .expect(204)
+        response = await api.get('/api/blogs')
+        assert.strictEqual(response.body.length, no_of_blogs-1)
+    })
 
+    test('a blog can be updated', async () => {
+        const blogUpdate = {
+            title: 'RHYTHYM of war',
+            author: 'Brandon Sanderson',
+            url: 'www.brandonsanderson.com',
+            likes: 9999999
+        }
+        const beforeUpdate = await api.get('/api/blogs')
+        const update = await api.put(`/api/blogs/${beforeUpdate.body[0].id}`).send(blogUpdate)
+        const afterUpdate = await api.get('/api/blogs')
 
-})
+        assert.strictEqual(beforeUpdate.body.length, afterUpdate.body.length)
+        Object.keys(blogUpdate).forEach((key) => assert.strictEqual(update.body[key], blogUpdate[key]))
+    })
 
-after(async () => {
-    await mongoose.connection.close()
+    after(async () => {
+        await mongoose.connection.close()
+    })
 })
