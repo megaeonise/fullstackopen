@@ -12,7 +12,8 @@ usersRouter.post('/users', async (request, response) => {
       const user = new User({
           username,
           name,
-          passwordHash
+          passwordHash,
+          blogs: []
       })
       const result = await user.save()
       response.status(201).json(result)
@@ -23,7 +24,7 @@ usersRouter.post('/users', async (request, response) => {
   })
 
 usersRouter.get('/users', async (request, response) => {
-    const users = await User.find({})
+    const users = await User.find({}).populate('blogs', {"title":1,"author":1,"url":1,"likes":1})
     response.json(users)
   })
 

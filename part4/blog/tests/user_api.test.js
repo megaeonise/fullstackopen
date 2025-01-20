@@ -67,7 +67,7 @@ describe('when there are some users saved initially', () => {
             assert.strictEqual(response.body.length, initialUsers.length)
         })
     
-        test('400 bad request returned if username is not unique', async () => {
+        test('400 expected username to be unique returned if username is not unique', async () => {
             const newUser = {
                 username: 'test',
                 name: 'i will break',
@@ -80,7 +80,7 @@ describe('when there are some users saved initially', () => {
             .expect(400)
     
             assert.strictEqual(request.status, 400)
-            assert.strictEqual(request.text ,'{"error":"Bad Request"}')
+            assert.strictEqual(request.text ,'{"error":"expected `username` to be unique"}')
         })
         test('400 bad request returned if username is less than 3 characters in length', async () => {
             const newUser = {
@@ -112,4 +112,8 @@ describe('when there are some users saved initially', () => {
             assert.strictEqual(request.status, 400)
             assert.strictEqual(request.text ,'{"error":"Bad Request"}')
         })
+})
+
+after(async () => {
+    await mongoose.connection.close()
 })

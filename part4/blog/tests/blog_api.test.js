@@ -4,6 +4,8 @@ const supertest = require('supertest')
 const assert = require('node:assert')
 const app = require('../app')
 const Blog = require('../models/blog')
+const User = require('../models/user')
+
 
 
 const api = supertest(app)
@@ -31,11 +33,21 @@ const initialBlogs = [
 
 beforeEach(async () => {
     await Blog.deleteMany({})
+    const users = await api.get('/api/users')
+    let user = await User.findById(users.body[0].id)
 
-    const blogObjects = initialBlogs.map(blog => new Blog(blog))
+    const blogObjects = initialBlogs.map(blog => new Blog({
+        title: blog.title,
+        author: blog.author,
+        url: blog.url,
+        likes: blog.likes,
+        user: user.id
+      }))
     const promiseArray =  blogObjects.map(blog => blog.save())
-
-    await Promise.all(promiseArray)
+    const savedBlogs = await Promise.all(promiseArray)
+    savedBlogs.forEach((blog) => user.blogs = user.blogs.concat(blog._id))
+    console.log(user)
+    await user.save()
 })
 
 describe('when there are some blogs saved initially', () => {
@@ -54,11 +66,13 @@ describe('when there are some blogs saved initially', () => {
     })
 
     test('a valid blog can be added', async () => {
+        const users = await api.get('/api/users')
         const newBlog = {
             title: 'radiance...',
             author: 'BRANDON SANDERSON',
             url: 'twokmatrix.com',
-            likes: 12314583
+            likes: 12314583,
+            user: users.body[0].id
         }
         
         await api
@@ -72,21 +86,25 @@ describe('when there are some blogs saved initially', () => {
         const authors = response.body.map(r=>r.author)
         const urls = response.body.map(r=>r.url)
         const likes = response.body.map(r=>r.likes)
+        const usersId = response.body.map(r=>r.user.id)
         const blogObject = {
             title: titles,
             author: authors,
             url: urls,
-            likes: likes
+            likes: likes,
+            user: usersId
         }
         assert.strictEqual(response.body.length, initialBlogs.length+1)
         Object.keys(newBlog).forEach((key) => assert(blogObject[key].includes(newBlog[key])))
     })
 
     test('likes defaults to 0 if likes is missing', async () => {
+        const users = await api.get('/api/users')
         const newBlog = {
             title: 'test...',
             author: 'BTEST',
             url: 'test.com',
+            user: users.body[0].id
         }
         
         await api
@@ -105,11 +123,13 @@ describe('when there are some blogs saved initially', () => {
     })
 
     test('400 bad request returned if title and url are missing', async () => {
+        const users = await api.get('/api/users')
         const newBlog = {
             title: '',
             author: 'BTEST',
             url: '',
-            likes: 21023
+            likes: 21023,
+            user: users.body[0].id
         }
         
         const request = await api
@@ -146,7 +166,9 @@ describe('when there are some blogs saved initially', () => {
         Object.keys(blogUpdate).forEach((key) => assert.strictEqual(update.body[key], blogUpdate[key]))
     })
 
-    after(async () => {
-        await mongoose.connection.close()
-    })
+
+})
+
+after(async () => {
+    await mongoose.connection.close()
 })

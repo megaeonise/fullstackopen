@@ -7,7 +7,7 @@ const errorHandler = (error, request, response, next) => {
       logger.error(error)
     }
     else if (error.code === 11000){
-      return response.status(400).json({ error: 'Bad Request' })
+      return response.status(400).json({ error: 'expected `username` to be unique' })
     }
     else{
       logger.error(error)
