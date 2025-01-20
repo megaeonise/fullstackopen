@@ -6,6 +6,12 @@ const errorHandler = (error, request, response, next) => {
     else if (error.name === 'TypeError') {
       logger.error(error)
     }
+    else if (error.code === 11000){
+      return response.status(400).json({ error: 'Bad Request' })
+    }
+    else{
+      logger.error(error)
+    }
     next(error)
   }
 

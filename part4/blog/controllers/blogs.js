@@ -10,7 +10,7 @@ blogsRouter.get('/blogs', async (request, response) => {
 
 blogsRouter.post('/blogs', async (request, response) => {
   const blog = new Blog(request.body)
-  result = await blog.save()
+  const result = await blog.save()
   response.status(201).json(result)
 })
 
@@ -27,7 +27,7 @@ blogsRouter.put('/blogs/:id', async (request, response) => {
     likes: request.body.likes
   }
 
-  result = await Blog.findByIdAndUpdate(request.params.id, newBlog, {new: true, runValidators: true})
+  const result = await Blog.findByIdAndUpdate(request.params.id, newBlog, {new: true, runValidators: true})
   response.json(result)
 })
 
