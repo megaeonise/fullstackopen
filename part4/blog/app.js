@@ -9,6 +9,7 @@ const loginRouter = require('./controllers/login')
 const config = require('./utils/config')
 const { errorHandler } = require('./utils/error_handler')
 const { tokenExtractor } = require('./utils/token_extractor')
+const { userExtractor } = require('./utils/user_extractor')
 
 
 
@@ -18,6 +19,7 @@ app.use(cors())
 app.use(express.json())
 
 app.use(tokenExtractor)
+app.use(userExtractor)
 app.use('/api', blogsRouter)
 app.use('/api', usersRouter)
 app.use('/api', loginRouter)
