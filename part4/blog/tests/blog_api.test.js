@@ -53,9 +53,9 @@ beforeEach(async () => {
     const login = await api.post('/api/login').send(userLogin).expect(200)
     token = login.body.token
     await Blog.deleteMany({})
-    await api.post('/api/blogs').set({Authorization: `Bearer ${token}`}).send(initialBlogs[0]).expect(201)
-    await api.post('/api/blogs').set({Authorization: `Bearer ${token}`}).send(initialBlogs[1]).expect(201)
-    await api.post('/api/blogs').set({Authorization: `Bearer ${token}`}).send(initialBlogs[2]).expect(201)
+    for (let i=0; i<initialBlogs.length;i++){
+        await api.post('/api/blogs').set({Authorization: `Bearer ${token}`}).send(initialBlogs[i]).expect(201)
+    }
 })
 
 describe('when there are some blogs saved initially', () => {
