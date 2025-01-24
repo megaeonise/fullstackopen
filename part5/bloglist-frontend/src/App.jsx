@@ -12,7 +12,7 @@ const App = () => {
   const [author, setAuthor] = useState('')
   const [url, setUrl] = useState('')
   const [token, setToken] = useState('')
-  const [user, setUser] = useState('')
+  const [user, setUser] = useState(null)
   const [errorMessage, setErrorMessage] = useState(null)
   const [isError, setIsError] = useState(false)
   const [heading, setHeading] = useState('log in to application')
@@ -86,7 +86,7 @@ const App = () => {
   useEffect(() => {
     blogService.getAll(token).then(blogs =>
       setBlogs( blogs )
-    )  
+    )
   }, [user, errorMessage])
 
   useEffect(() => {
