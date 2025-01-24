@@ -7,7 +7,6 @@ const getAll = (token) => {
       Authorization: 'Bearer ' + token
     }
   })
-  console.log(token, 'test')
   return request.then(response => response.data)
 }
 
