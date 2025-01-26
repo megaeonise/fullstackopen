@@ -12,12 +12,9 @@ const getAll = (token) => {
   return request.then(response => response.data)
 }
 
-const addBlog = (token, title, author, url) => {
-  const request = axios.post(baseUrl, {
-    title: title,
-    author: author,
-    url: url
-  },{
+const addBlog = (token, blog) => {
+  console.log('addblog', blog)
+  const request = axios.post(baseUrl, blog, {
     headers:{
       Authorization: 'Bearer ' + token
     }

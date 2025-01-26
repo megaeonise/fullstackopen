@@ -4,14 +4,12 @@ import blogService from './services/blogs'
 import loginService from './services/login'
 import Message from './components/Message'
 import Togglable from './components/Togglable'
+import BlogForm from './components/BlogForm'
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
-  const [title, setTitle] = useState('')
-  const [author, setAuthor] = useState('')
-  const [url, setUrl] = useState('')
   const [token, setToken] = useState('')
   const [user, setUser] = useState(null)
   const [errorMessage, setErrorMessage] = useState(null)
@@ -49,14 +47,11 @@ const App = () => {
     }
     console.log('logging in with', username)
   }
-  const addBlog = async (event) => {
-    event.preventDefault()
+  const createBlog = async (blog) => {
     try {
-      await blogService.addBlog(token, title, author, url)
-      setAuthor('')
-      setUrl('')
-      setTitle('')
-      setErrorMessage(`a new blog ${title} by ${author} added`)
+      console.log(blog)
+      await blogService.addBlog(token, blog)
+      setErrorMessage(`a new blog ${blog.title} by ${blog.author} added`)
       setTimeout(()=> {
         setErrorMessage(null)
       }, 5000)
@@ -85,9 +80,11 @@ const App = () => {
   }
 
   useEffect(() => {
+    if(user!==null){
       blogService.getAll(token).then(blogs =>
-      setBlogs( blogs )
-    )
+        setBlogs( blogs )
+      )
+    }
   }, [user, errorMessage])
 
   useEffect(() => {
@@ -161,7 +158,7 @@ const App = () => {
       <div>
         <p>{user.name} logged in</p> <button onClick={handleLogout}>logout</button>
         <Togglable buttonLabel="new blog">
-          {blogForm()}
+          <BlogForm createBlog={createBlog}/>
         </Togglable>
       </div>}
       {blogs.map(blog =>
