@@ -13,7 +13,6 @@ const getAll = (token) => {
 }
 
 const addBlog = (token, blog) => {
-  console.log('addblog', blog)
   const request = axios.post(baseUrl, blog, {
     headers:{
       Authorization: 'Bearer ' + token
@@ -22,4 +21,14 @@ const addBlog = (token, blog) => {
   return request.then(response => response.data)
 }
 
-export default { getAll, addBlog }
+const addLike = (token, blog) => {
+  const url = baseUrl + `/${blog.id}`
+  const request = axios.put(url, blog, {
+    headers:{
+      Authorization: 'Bearer ' + token
+    }
+  })
+  return request.then(response => response.data)
+}
+
+export default { getAll, addBlog, addLike }

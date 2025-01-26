@@ -84,6 +84,7 @@ const App = () => {
       blogService.getAll(token).then(blogs =>
         setBlogs( blogs )
       )
+      console.log(blogs)
     }
   }, [user, errorMessage])
 
@@ -157,12 +158,12 @@ const App = () => {
       {user===null ? loginForm() : 
       <div>
         <p>{user.name} logged in</p> <button onClick={handleLogout}>logout</button>
-        <Togglable buttonLabel="new blog">
+        <Togglable buttonLabel="new blog" closeButtonLabel="cancel">
           <BlogForm createBlog={createBlog}/>
         </Togglable>
       </div>}
       {blogs.map(blog =>
-        <Blog key={blog.id} blog={blog} />
+        <Blog key={blog.id} blog={blog} token={token}/>
       )}
     </div>
   )
