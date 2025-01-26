@@ -78,6 +78,7 @@ const App = () => {
   }
 
   useEffect(() => {
+    console.log('i am runinng')
     if(user!==null){
       blogService.getAll(token).then(blogs =>
         setBlogs(blogs.sort((a, b) => b.likes-a.likes))
@@ -95,11 +96,6 @@ const App = () => {
     }
   }, [])
 
-  const handleLikes = async () => {
-    blog.likes += 1
-    const updatedBlog = await blogService.addLike(token, blog)
-    blog.likes = updatedBlog.likes
-  }
 
   const loginForm = () => (
     <form onSubmit={sendLogin}>
