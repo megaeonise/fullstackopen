@@ -6,6 +6,8 @@ const getAll = (token) => {
     headers: {
       Authorization: 'Bearer ' + token
     }
+  }).catch(function (error) {
+    console.log(error.toJSON())
   })
   return request.then(response => response.data)
 }
