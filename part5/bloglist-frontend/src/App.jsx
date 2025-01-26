@@ -49,7 +49,6 @@ const App = () => {
   }
   const createBlog = async (blog) => {
     try {
-      console.log(blog)
       await blogService.addBlog(token, blog)
       setErrorMessage(`a new blog ${blog.title} by ${blog.author} added`)
       setTimeout(()=> {
@@ -57,7 +56,6 @@ const App = () => {
       }, 5000)
     } catch (exception) {
       setErrorMessage('title or url missing or incorrect')
-      console.log(exception)
       setIsError(true)
       setTimeout(()=> {
         setErrorMessage(null)
@@ -82,9 +80,8 @@ const App = () => {
   useEffect(() => {
     if(user!==null){
       blogService.getAll(token).then(blogs =>
-        setBlogs( blogs )
+        setBlogs(blogs.sort((a, b) => b.likes-a.likes))
       )
-      console.log(blogs)
     }
   }, [user, errorMessage])
 
@@ -97,6 +94,12 @@ const App = () => {
       setHeading('blogs')
     }
   }, [])
+
+  const handleLikes = async () => {
+    blog.likes += 1
+    const updatedBlog = await blogService.addLike(token, blog)
+    blog.likes = updatedBlog.likes
+  }
 
   const loginForm = () => (
     <form onSubmit={sendLogin}>
@@ -120,36 +123,6 @@ const App = () => {
       </form>
   )
 
-  const blogForm = () => (
-    <form onSubmit={addBlog}>
-      <h2>create new</h2>
-      <div>
-          title
-            <input
-            type="text"
-            value={title}
-            onChange={ ({target}) => setTitle(target.value)} 
-            />
-        </div>
-        <div>
-          author
-            <input
-            type="text"
-            value={author}
-            onChange={ ({target}) => setAuthor(target.value)} 
-            />
-        </div>
-        <div>
-          url
-            <input
-            type="text"
-            value={url}
-            onChange={ ({target}) => setUrl(target.value)} 
-            />
-        </div>
-        <button type='submit'>create</button>
-    </form>
-  )
 
   return (
     <div>

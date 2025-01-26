@@ -1,7 +1,6 @@
 import Togglable from "./Togglable"
 import blogService from '../services/blogs'
 const Blog = ({ blog, token }) => {
-  console.log(blog)
   const blogStyle = {
     paddingTop: 10,
     paddingLeft: 2,
@@ -14,7 +13,6 @@ const Blog = ({ blog, token }) => {
     blog.likes += 1
     const updatedBlog = await blogService.addLike(token, blog)
     blog.likes = updatedBlog.likes
-    console.log(blog.likes)
   }
 
   return (
@@ -26,6 +24,9 @@ const Blog = ({ blog, token }) => {
       <div>
         likes {blog.likes}
         <button onClick={handleLikes}>like</button>
+      </div>
+      <div>
+      {!blog.user ? '' : blog.user.username}
       </div>
     </Togglable>
   </div>  
