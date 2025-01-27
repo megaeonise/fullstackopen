@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import Blog from './components/Blog'
 import blogService from './services/blogs'
 import loginService from './services/login'
@@ -16,6 +16,7 @@ const App = () => {
   const [isError, setIsError] = useState(false)
   const [heading, setHeading] = useState('log in to application')
   
+  //login logic
   const sendLogin = async (event) => {
     event.preventDefault()
     try {
@@ -26,7 +27,6 @@ const App = () => {
       window.localStorage.setItem(
         'loggedBlogappUser', JSON.stringify(user)
       )
-
       setUser(user)
       setUsername('')
       setPassword('')
@@ -47,8 +47,10 @@ const App = () => {
     }
     console.log('logging in with', username)
   }
+  //blog creation handling
   const createBlog = async (blog) => {
     try {
+      blogFormRef.current.toggleVisibility()
       await blogService.addBlog(token, blog)
       setErrorMessage(`a new blog ${blog.title} by ${blog.author} added`)
       setTimeout(()=> {
@@ -64,6 +66,7 @@ const App = () => {
     }
   }
 
+  //handling logout
   const handleLogout = (event) => {
     event.preventDefault()
     window.localStorage.removeItem('loggedBlogappUser')
@@ -77,15 +80,14 @@ const App = () => {
     }, 5000)
   }
 
+  //For getting the list of blogs
   useEffect(() => {
-    console.log('i am runinng')
     if(user!==null){
-      blogService.getAll(token).then(blogs =>
-        setBlogs(blogs.sort((a, b) => b.likes-a.likes))
-      )
+      blogRefresh()
     }
   }, [user, errorMessage])
 
+  //checking if user is stored in storage
   useEffect(() => {
     const loggedUserJSON = window.localStorage.getItem('loggedBlogappUser')
     if (loggedUserJSON) {
@@ -95,6 +97,14 @@ const App = () => {
       setHeading('blogs')
     }
   }, [])
+
+  //getting blogs
+  const blogRefresh = () => {
+    blogService.getAll(token).then(blogs =>
+      setBlogs(blogs.sort((a, b) => b.likes-a.likes))
+    )
+  }
+
 
 
   const loginForm = () => (
@@ -119,6 +129,7 @@ const App = () => {
       </form>
   )
 
+  const blogFormRef = useRef()
 
   return (
     <div>
@@ -127,12 +138,12 @@ const App = () => {
       {user===null ? loginForm() : 
       <div>
         <p>{user.name} logged in</p> <button onClick={handleLogout}>logout</button>
-        <Togglable buttonLabel="new blog" closeButtonLabel="cancel">
+        <Togglable buttonLabel="new blog" closeButtonLabel="cancel" ref={blogFormRef}>
           <BlogForm createBlog={createBlog}/>
         </Togglable>
       </div>}
       {blogs.map(blog =>
-        <Blog key={blog.id} blog={blog} token={token}/>
+        <Blog key={blog.id} blog={blog} token={token} blogRefresh={blogRefresh}/>
       )}
     </div>
   )
