@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import Blog from './components/Blog'
 import blogService from './services/blogs'
 import loginService from './services/login'
@@ -15,7 +15,7 @@ const App = () => {
   const [errorMessage, setErrorMessage] = useState(null)
   const [isError, setIsError] = useState(false)
   const [heading, setHeading] = useState('log in to application')
-  
+
   //login logic
   const sendLogin = async (event) => {
     event.preventDefault()
@@ -33,14 +33,16 @@ const App = () => {
       setHeading('blogs')
       setToken(user.token)
       setErrorMessage('logged in')
-      setTimeout(()=> {
+      setTimeout(() => {
         setErrorMessage(null)
         setIsError(false)
       }, 5000)
+      blogRefresh()
     } catch (exception) {
       setIsError(true)
+      blogRefresh()
       setErrorMessage('wrong username or password')
-      setTimeout(()=> {
+      setTimeout(() => {
         setErrorMessage(null)
         setIsError(false)
       }, 5000)
@@ -53,13 +55,14 @@ const App = () => {
       blogFormRef.current.toggleVisibility()
       await blogService.addBlog(token, blog)
       setErrorMessage(`a new blog ${blog.title} by ${blog.author} added`)
-      setTimeout(()=> {
+      setTimeout(() => {
         setErrorMessage(null)
       }, 5000)
+      blogRefresh()
     } catch (exception) {
       setErrorMessage('title or url missing or incorrect')
       setIsError(true)
-      setTimeout(()=> {
+      setTimeout(() => {
         setErrorMessage(null)
         setIsError(false)
       }, 5000)
@@ -75,17 +78,27 @@ const App = () => {
     setToken('')
     setBlogs([])
     setErrorMessage('logged out')
-    setTimeout(()=> {
+    setTimeout(() => {
       setErrorMessage(null)
     }, 5000)
   }
 
+  //getting blogs
+  const blogRefresh = useCallback(() => {
+    console.log('it works')
+    if(user!==null){
+      blogService.getAll(token).then(blogs =>
+        setBlogs(blogs.sort((a, b) => b.likes-a.likes))
+      )}
+    else{
+      setBlogs([])
+    }
+  }, [user, token])
+
   //For getting the list of blogs
   useEffect(() => {
-    if(user!==null){
-      blogRefresh()
-    }
-  }, [user, errorMessage])
+    blogRefresh()
+  }, [user, blogRefresh])
 
   //checking if user is stored in storage
   useEffect(() => {
@@ -98,35 +111,26 @@ const App = () => {
     }
   }, [])
 
-  //getting blogs
-  const blogRefresh = () => {
-    blogService.getAll(token).then(blogs =>
-      setBlogs(blogs.sort((a, b) => b.likes-a.likes))
-    )
-  }
-
-
-
   const loginForm = () => (
     <form onSubmit={sendLogin}>
-        <div>
+      <div>
           username
-            <input
-            type="text"
-            value={username}
-            onChange={ ({target}) => setUsername(target.value)} 
-            />
-        </div>
-        <div>
+        <input
+          type="text"
+          value={username}
+          onChange={ ({ target }) => setUsername(target.value)}
+        />
+      </div>
+      <div>
           password
-            <input
-            type="text"
-            value={password}
-            onChange={ ({target}) => setPassword(target.value)} 
-            />
-        </div>
-        <button type='submit'>login</button>
-      </form>
+        <input
+          type="text"
+          value={password}
+          onChange={ ({ target }) => setPassword(target.value)}
+        />
+      </div>
+      <button type='submit'>login</button>
+    </form>
   )
 
   const blogFormRef = useRef()
@@ -135,13 +139,13 @@ const App = () => {
     <div>
       <Message message={errorMessage} isError={isError}/>
       <h2>{heading}</h2>
-      {user===null ? loginForm() : 
-      <div>
-        <p>{user.name} logged in</p> <button onClick={handleLogout}>logout</button>
-        <Togglable buttonLabel="new blog" closeButtonLabel="cancel" ref={blogFormRef}>
-          <BlogForm createBlog={createBlog}/>
-        </Togglable>
-      </div>}
+      {user===null ? loginForm() :
+        <div>
+          <p>{user.name} logged in</p> <button onClick={handleLogout}>logout</button>
+          <Togglable buttonLabel="new blog" closeButtonLabel="cancel" ref={blogFormRef}>
+            <BlogForm createBlog={createBlog}/>
+          </Togglable>
+        </div>}
       {blogs.map(blog =>
         <Blog key={blog.id} blog={blog} token={token} blogRefresh={blogRefresh}/>
       )}

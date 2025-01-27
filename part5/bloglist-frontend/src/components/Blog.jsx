@@ -1,6 +1,6 @@
-import { useState } from "react"
+import { useState } from 'react'
 
-import Togglable from "./Togglable"
+import Togglable from './Togglable'
 import blogService from '../services/blogs'
 const Blog = ({ blog, token, blogRefresh }) => {
   const blogStyle = {
@@ -22,36 +22,36 @@ const Blog = ({ blog, token, blogRefresh }) => {
 
   const handleDelete = async () => {
     if(window.confirm(`Remove blog ${blog.title} by ${blog.author}`))
-    await blogService.deleteBlog(token, blog.id)
+      await blogService.deleteBlog(token, blog.id)
     setVisible(false)
   }
 
   if(visible){
-  return (
-  <div style={blogStyle}>
-    {blog.title} {blog.author} <Togglable buttonLabel="view" closeButtonLabel="hide">
-      <div>
-        {blog.url}
-      </div>
-      <div>
+    return (
+      <div style={blogStyle}>
+        {blog.title} {blog.author} <Togglable buttonLabel="view" closeButtonLabel="hide">
+          <div>
+            {blog.url}
+          </div>
+          <div>
         likes {likes}
-        <button onClick={handleLikes}>like</button>
+            <button onClick={handleLikes}>like</button>
+          </div>
+          {!blog.user ? null :
+            <div>
+              <button onClick={handleDelete}>delete</button>
+            </div>}
+          <div>
+            {!blog.user ? '' : blog.user.username}
+          </div>
+        </Togglable>
       </div>
-      {!blog.user ? null : 
-      <div>
-        <button onClick={handleDelete}>delete</button>
-      </div>}
-      <div>
-      {!blog.user ? '' : blog.user.username}
-      </div>
-    </Togglable>
-  </div>  
-)}
-else{
-  return(
-    <>
-    </>
-  )
-}}
+    )}
+  else{
+    return(
+      <>
+      </>
+    )
+  }}
 
 export default Blog
