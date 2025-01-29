@@ -15,9 +15,13 @@ const Blog = ({ blog, token, blogRefresh }) => {
 
   const handleLikes = async () => {
     blog.likes += 1
+    try {
     const updatedBlog = await blogService.addLike(token, blog)
     setLikes(updatedBlog.likes)
     blogRefresh()
+    } catch (exception) {
+      blogRefresh()
+    }
   }
 
   const handleDelete = async () => {
