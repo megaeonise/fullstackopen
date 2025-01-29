@@ -85,7 +85,6 @@ const App = () => {
 
   //getting blogs
   const blogRefresh = useCallback(() => {
-    console.log('it works')
     if(user!==null){
       blogService.getAll(token).then(blogs =>
         setBlogs(blogs.sort((a, b) => b.likes-a.likes))
