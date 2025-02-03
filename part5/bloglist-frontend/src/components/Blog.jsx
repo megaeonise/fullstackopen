@@ -32,20 +32,20 @@ const Blog = ({ blog, token, blogRefresh }) => {
 
   if(visible){
     return (
-      <div style={blogStyle}>
+      <div id="blog_title_blog_author" style={blogStyle}>
         {blog.title} {blog.author} <Togglable buttonLabel="view" closeButtonLabel="hide">
-          <div>
+          <div id="blog_url">
             {blog.url}
           </div>
-          <div>
+          <div id="blog_likes">
         likes {likes}
-            <button onClick={handleLikes}>like</button>
+            <button id="like-button" onClick={handleLikes}>like</button>
           </div>
           {!blog.user ? null :
-            <div>
-              <button onClick={handleDelete}>delete</button>
+            <div id="blog_delete">
+              <button id="delete-button" onClick={handleDelete}>delete</button>
             </div>}
-          <div>
+          <div id="blog_user">
             {!blog.user ? '' : blog.user.username}
           </div>
         </Togglable>
