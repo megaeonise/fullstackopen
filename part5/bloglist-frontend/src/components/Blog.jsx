@@ -2,7 +2,7 @@ import { useState } from 'react'
 
 import Togglable from './Togglable'
 import blogService from '../services/blogs'
-const Blog = ({ blog, token, blogRefresh }) => {
+const Blog = ({ blog, token, blogRefresh, user }) => {
   const blogStyle = {
     paddingTop: 10,
     paddingLeft: 2,
@@ -10,9 +10,9 @@ const Blog = ({ blog, token, blogRefresh }) => {
     borderWidth: 1,
     marginBottom: 5
   }
+  console.log(blog.user)
   const [likes, setLikes] = useState(blog.likes)
   const [visible, setVisible] = useState(true)
-
   const handleLikes = async () => {
     blog.likes += 1
     if (token){
@@ -41,7 +41,7 @@ const Blog = ({ blog, token, blogRefresh }) => {
         likes {likes}
             <button id="like-button" onClick={handleLikes}>like</button>
           </div>
-          {!blog.user ? null :
+          {blog.user.username!==user.username ? null :
             <div id="blog_delete">
               <button id="delete-button" onClick={handleDelete}>delete</button>
             </div>}

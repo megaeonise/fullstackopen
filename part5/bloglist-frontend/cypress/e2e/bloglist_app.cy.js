@@ -6,7 +6,7 @@ describe('Blog app', function() {
       name: 'blogger',
       password: 'iheartblogs'
     }
-    cy.request('POST', 'http://localhost:3003/api/users', user)
+    cy.createUser(user)
   })
 
   it('Login form is shown', function() {
@@ -36,7 +36,7 @@ describe('Blog app', function() {
   })
   describe('When logged in', function() {
     beforeEach(function() {
-      cy.login({ username: 'blogtester', name: 'blogger', password: 'iheartblogs'})
+      cy.login({ username: 'blogtester', password: 'iheartblogs'})
       cy.contains('new blog').click()
     })
 
@@ -65,6 +65,17 @@ describe('Blog app', function() {
       cy.contains('blogtester')
       cy.get('#delete-button').click()
       cy.contains('deletetester deletemaster').should('not.exist')
+    })
+
+    it('the delete button can only be seen by the poster', function() {
+      cy.createBlog({ title: 'buttontester', author: 'cannotsee', 'url':'www.invisiblebutton.com' })
+      cy.contains('buttontester cannotsee')
+      cy.contains('logout').click()
+      cy.createUser({username: 'temp', name:'temporary', password:'temppass'})
+      cy.login({ username: 'temp', password: 'temppass'})
+      cy.contains('buttontester cannotsee')
+      cy.contains('view').click()
+      cy.contains('delete').should('not.exist')
     })
   })
 })
