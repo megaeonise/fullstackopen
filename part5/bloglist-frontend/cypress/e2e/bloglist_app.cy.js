@@ -1,13 +1,13 @@
 describe('Blog app', function() {
   beforeEach(function() {
-    cy.request('POST', 'http://localhost:3001/api/testing/reset')
+    cy.request('POST', 'http://localhost:3003/api/testing/reset')
     const user = {
       username: 'blogtester',
       name: 'blogger',
       password: 'iheartblogs'
     }
-    cy.request('POST', 'http://localhost:3001/api/users', user)
-    cy.visit('http://localhost:5173')
+    cy.request('POST', 'http://localhost:3003/api/users', user)
+    cy.visit('http://[::1]:5173')
   })
 
   it('Login form is shown', function() {

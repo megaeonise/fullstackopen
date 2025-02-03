@@ -4,6 +4,7 @@ const supertest = require('supertest')
 const assert = require('node:assert')
 const app = require('../app')
 const User = require('../models/user')
+const Blog = require('../models/blog')
 const logger = require('../utils/logger')
 
 
@@ -29,6 +30,7 @@ const initialUsers = [
 
 beforeEach(async () => {
     await User.deleteMany({})
+    await Blog.deleteMany({})
 
     const promiseArray =  initialUsers.map(user => api.post('/api/users').send(user))
 
@@ -115,5 +117,7 @@ describe('when there are some users saved initially', () => {
 })
 
 after(async () => {
+    await User.deleteMany({})
+    await Blog.deleteMany({})
     await mongoose.connection.close()
 })
