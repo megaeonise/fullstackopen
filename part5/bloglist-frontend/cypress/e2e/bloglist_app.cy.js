@@ -53,9 +53,10 @@ describe('Blog app', function() {
     it('a blog can be liked', function() {
       cy.createBlog({ title: 'liketester', author: 'likemaster', url: 'www.likes.net' })
       cy.contains('view').click()
-      cy.get('#blog_likes').contains('likes 0')
-      cy.get('#like-button').click()
-      cy.get('#blog_likes').contains('likes 1')
+      cy.get('#liketester_likes').contains('likes 0')
+      cy.contains('hide').click()
+      cy.addLikes('liketester', 1)
+      cy.get('#liketester_likes').contains('likes 1')
     })
     
     it('a blog can be deleted', function() {
@@ -76,6 +77,18 @@ describe('Blog app', function() {
       cy.contains('buttontester cannotsee')
       cy.contains('view').click()
       cy.contains('delete').should('not.exist')
+    })
+
+    it('the blogs are ordered by likes in descending order', function() {
+      cy.createBlog({ title: 'underdog', author: 'bestsoon', 'url':'www.soon.com' })
+      cy.createBlog({ title: 'average', author: 'okay', 'url':'www.good.com' })
+      cy.createBlog({ title: 'mostliked', author: 'best', 'url':'www.best.com' })
+      cy.addLikes('underdog', 1)
+      cy.addLikes('average', 3)
+      cy.addLikes('mostliked', 5)
+      cy.get('.entry').eq(0).should('contain', 'mostliked')
+      cy.get('.entry').eq(1).should('contain', 'average')
+      cy.get('.entry').eq(2).should('contain', 'underdog')
     })
   })
 })

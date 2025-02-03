@@ -10,7 +10,6 @@ const Blog = ({ blog, token, blogRefresh, user }) => {
     borderWidth: 1,
     marginBottom: 5
   }
-  console.log(blog.user)
   const [likes, setLikes] = useState(blog.likes)
   const [visible, setVisible] = useState(true)
   const handleLikes = async () => {
@@ -32,14 +31,14 @@ const Blog = ({ blog, token, blogRefresh, user }) => {
 
   if(visible){
     return (
-      <div id="blog_title_blog_author" style={blogStyle}>
+      <div id="blog_title_blog_author" className="entry" style={blogStyle}>
         {blog.title} {blog.author} <Togglable buttonLabel="view" closeButtonLabel="hide">
           <div id="blog_url">
             {blog.url}
           </div>
-          <div id="blog_likes">
+          <div id={`${blog.title}_likes`}>
         likes {likes}
-            <button id="like-button" onClick={handleLikes}>like</button>
+            <button id={`${blog.title}-like-button`} onClick={handleLikes}>like</button>
           </div>
           {blog.user.username!==user.username ? null :
             <div id="blog_delete">

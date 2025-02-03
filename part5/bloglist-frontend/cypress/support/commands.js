@@ -51,3 +51,21 @@ Cypress.Commands.add('createUser', ({ username, name, password}) => {
         username, name, password
       })
 })
+
+Cypress.Commands.add('addLikes', (entry, number) => {
+    const button_id = `#${entry}-like-button`
+    const likes_id = `#${entry}_likes`
+    cy.contains(entry)
+    .contains('view')
+    .click()
+    for (let i=0; i<number; i++){
+        cy.contains(entry).
+        get(button_id).
+        click()
+        cy.wait(1000)
+        cy.get(likes_id).should('have.text', `likes ${i+1}like`)
+    }
+    cy.contains(entry)
+    .contains('hide')
+    .click()
+})
