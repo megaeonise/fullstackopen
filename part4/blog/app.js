@@ -22,6 +22,10 @@ app.use('/api', usersRouter)
 app.use('/api', loginRouter)
 app.use(tokenExtractor)
 app.use('/api', userExtractor, blogsRouter)
+if (process.env.NODE_ENV === 'test') {
+    const testingRouter = require('./controller/testing')
+    app.use('/api/testing', testingRouter)
+}
 app.use(errorHandler)
 
 module.exports = app
