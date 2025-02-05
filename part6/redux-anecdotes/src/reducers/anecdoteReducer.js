@@ -35,10 +35,7 @@ export const addAnecdote = (content) => {
 const initialState = anecdotesAtStart.map(asObject)
 
 const reducer = (state = initialState, action) => {
-  console.log('state now: ', state)
-  console.log('action', action)
   let newState = [...state]
-  console.log(newState)
   switch(action.type){
     case 'VOTE':
       let votedAnecdote = newState.findIndex(anecdote => anecdote.id === action.payload.id)
