@@ -17,6 +17,7 @@ const asObject = (anecdote) => {
   }
 }
 
+//Action creators
 export const addVote = (id) => {
   return {
   type: 'VOTE',
