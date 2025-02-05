@@ -42,10 +42,10 @@ const reducer = (state = initialState, action) => {
     case 'VOTE':
       let votedAnecdote = newState.findIndex(anecdote => anecdote.id === action.payload.id)
       newState[votedAnecdote].votes += 1
-      return newState
+      return newState.sort((a, b) => b.votes - a.votes)
     case 'ADD':
-      return [...newState, action.payload]
-    default: return state
+      return [...newState, action.payload].sort((a, b) => b.votes - a.votes)
+    default: return state.sort((a, b) => b.votes - a.votes)
   }
 }
 
