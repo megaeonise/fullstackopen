@@ -8,7 +8,8 @@ const AnecdoteList = () => {
     const dispatch = useDispatch()
 
     const hasFilter = (anecdote) => {
-      return anecdote.content.toLowerCase().includes(filter.filter.toLowerCase())
+      console.log(filter)
+      return anecdote.content.toLowerCase().includes(filter.toLowerCase())
     }
   
     const vote = (id) => {
