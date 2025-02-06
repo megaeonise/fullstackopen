@@ -17,9 +17,9 @@ const incrementVote = async (object) => {
   const update_url = baseUrl.concat(id_url)
   let newObject = Object.assign({}, object)
   newObject.votes += 1
-  const response = await axios.put(update_url, newObject)
-
+  await axios.put(update_url, newObject)
 }
+
 export default { 
   getAll, 
   createNew,
