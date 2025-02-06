@@ -8,7 +8,7 @@ const AnecdoteForm = () => {
         event.preventDefault()
         const content = event.target.anecdote.value
         dispatch(addAnecdote(content))
-        dispatch(setNotification(`you added ${content}`))
+        dispatch(setNotification(`you added ${content}`, 1000))
         event.target.anecdote.value = ''
       }
 

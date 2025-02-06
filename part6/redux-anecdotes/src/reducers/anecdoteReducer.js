@@ -57,7 +57,6 @@ export const addAnecdote = anecdote => {
 
 export const incrementVote = anecdote => {
   return async dispatch => {
-    console.log(anecdote)
     await anecdoteService.incrementVote(anecdote)
     dispatch(addVote(anecdote.id))
   }
