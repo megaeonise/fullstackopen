@@ -4,7 +4,7 @@ import filterReducer from './reducers/filterReducer'
 import notificationReducer from './reducers/notificationReducer'
 
 
-export const store = configureStore({
+const store = configureStore({
   reducer: {
     anecdotes: anecdoteReducer,
     filter: filterReducer,
@@ -12,6 +12,6 @@ export const store = configureStore({
   }
 })
 
-
+export default store
 
 console.log(store.getState())
