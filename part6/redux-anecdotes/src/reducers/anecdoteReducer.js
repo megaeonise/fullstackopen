@@ -1,4 +1,5 @@
 import { createSlice, current } from "@reduxjs/toolkit"
+import anecdoteService from '../services/anecdotes'
 
 // const anecdotesAtStart = [
 //   'If it hurts, do it more often',
@@ -29,8 +30,9 @@ const anecdoteSlice = createSlice({
       return state.sort((a, b) => b.votes - a.votes)
     },
     addAnecdote(state, action){
-      state.push(asObject(action.payload))
-      state.sort((a, b) => b.votes - a.votes)
+      const object = asObject(action.payload)
+      state.push(object)
+      anecdoteService.createNew(object)
     },
     setAnecdotes(state, action){
       return action.payload
