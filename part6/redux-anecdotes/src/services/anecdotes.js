@@ -12,7 +12,16 @@ const createNew = async (object) => {
   return response.data
 }
 
+const incrementVote = async (object) => {
+  const id_url = `/${object.id}`
+  const update_url = baseUrl.concat(id_url)
+  let newObject = Object.assign({}, object)
+  newObject.votes += 1
+  const response = await axios.put(update_url, newObject)
+
+}
 export default { 
   getAll, 
   createNew,
+  incrementVote
 }
