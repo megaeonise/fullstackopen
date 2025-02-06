@@ -48,7 +48,7 @@
     {
       "id": "85557",
       "content": "rikth",
-      "votes": 8
+      "votes": 9
     },
     {
       "id": "94527",
@@ -63,6 +63,11 @@
     {
       "id": "17480",
       "content": "test",
+      "votes": 0
+    },
+    {
+      "id": "45388",
+      "content": "asdas",
       "votes": 0
     }
   ]
