@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { 
-  useMatch, Routes, Route, Link, useParams} from 'react-router-dom'
+  useMatch, Routes, Route, Link,
+  useNavigate} from 'react-router-dom'
 
 
 
@@ -63,6 +64,7 @@ const CreateNew = (props) => {
       votes: 0
     })
   }
+  console.log(props)
 
   return (
     <div>
@@ -104,6 +106,7 @@ const App = () => {
       id: 2
     }
   ])
+  const navigate = useNavigate()
   const match = useMatch('/anecdotes/:id')
   const anecdote = match ? anecdotes.find(anecdote => anecdote.id === Number(match.params.id)) : null
 
@@ -118,13 +121,15 @@ const App = () => {
         <Link style={padding} to="/create">create new</Link>
         <Link style={padding} to="/about">about</Link>
       </div>
+      {notification==='' ? null : <div>{notification}</div>}
   
       <Routes>
         <Route path="/" element={<AnecdoteList anecdotes={anecdotes}/>} />
-        <Route path="/create" element={<CreateNew/>} />
+        <Route path="/create" element={<CreateNew addNew={addNew}/>} />
         <Route path="/about" element={<About/>} />
         <Route path="/anecdotes/:id" element={<Anecdote anecdote={anecdote}/>} />
       </Routes>
+
       </div>
     )
   }
@@ -134,6 +139,11 @@ const App = () => {
   const addNew = (anecdote) => {
     anecdote.id = Math.round(Math.random() * 10000)
     setAnecdotes(anecdotes.concat(anecdote))
+    navigate('/')
+    setNotification(`a new anecdote ${anecdote.content} created!`)
+    setTimeout(()=>{
+      setNotification('')
+    }, 5000)
   }
 
   const anecdoteById = (id) =>
