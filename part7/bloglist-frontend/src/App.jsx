@@ -8,6 +8,9 @@ import BlogForm from "./components/BlogForm";
 import { useDispatch, useSelector } from "react-redux";
 import { setBlog } from "./reducers/blogReducer";
 import { setNotification, setError } from "./reducers/messageReducer";
+import { setUser, removeUser } from "./reducers/userReducer";
+
+
 
 const App = () => {
   const blogs = useSelector(state=>state.blog)
@@ -15,8 +18,7 @@ const App = () => {
   const isError = useSelector(state=>state.message[1])
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [token, setToken] = useState("");
-  const [user, setUser] = useState(null);
+  const user = useSelector(state=>state.user);
   const [heading, setHeading] = useState("log in to application");
   const dispatch = useDispatch()
 
@@ -31,11 +33,11 @@ const App = () => {
       });
 
       window.localStorage.setItem("loggedBlogappUser", JSON.stringify(user));
-      setUser(user);
+      console.log(user)
+      dispatch(setUser(user));
       setUsername("");
       setPassword("");
       setHeading("blogs");
-      setToken(user.token);
       dispatch(setError(false))
       dispatch(setNotification("logged in",5000));
       blogRefresh();
@@ -50,7 +52,7 @@ const App = () => {
   const createBlog = async (blog) => {
     try {
       blogFormRef.current.toggleVisibility();
-      await blogService.addBlog(token, blog);
+      await blogService.addBlog(user.token, blog);
       dispatch(setError(false))
       dispatch(setNotification(`a new blog ${blog.title} by ${blog.author} added`,5000));
       blogRefresh();
@@ -66,8 +68,7 @@ const App = () => {
     event.preventDefault();
     window.localStorage.removeItem("loggedBlogappUser");
     setHeading("log in to application");
-    setUser(null);
-    setToken("");
+    dispatch(removeUser());
     dispatch(setBlog([]));
     dispatch(setError(false))
     dispatch(setNotification("logged out",5000))
@@ -77,12 +78,12 @@ const App = () => {
   const blogRefresh = useCallback(() => {
     if (user !== null) {
       blogService
-        .getAll(token)
+        .getAll(user.token)
         .then((blogs) => dispatch(setBlog(blogs.sort((a, b) => b.likes - a.likes))));
     } else {
       dispatch(setBlog([]));
     }
-  }, [user, token]);
+  }, [user]);
 
   //For getting the list of blogs
   useEffect(() => {
@@ -94,8 +95,7 @@ const App = () => {
     const loggedUserJSON = window.localStorage.getItem("loggedBlogappUser");
     if (loggedUserJSON) {
       const user = JSON.parse(loggedUserJSON);
-      setUser(user);
-      setToken(user.token);
+      dispatch(setUser(user));
       setHeading("blogs");
     }
   }, []);
@@ -152,7 +152,7 @@ const App = () => {
           key={blog.id}
           user={user}
           blog={blog}
-          token={token}
+          token={user.token}
           blogRefresh={blogRefresh}
         />
       ))}
