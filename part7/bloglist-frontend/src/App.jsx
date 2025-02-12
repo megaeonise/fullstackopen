@@ -19,8 +19,7 @@ const App = () => {
   const [user, setUser] = useState(null);
   const [heading, setHeading] = useState("log in to application");
   const dispatch = useDispatch()
-  console.log(errorMessage, 'errormessage')
-  console.log(isError, 'iserrer')
+
 
   //login logic
   const sendLogin = async (event) => {

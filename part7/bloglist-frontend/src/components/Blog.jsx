@@ -2,6 +2,9 @@ import { useState } from 'react'
 
 import Togglable from './Togglable'
 import blogService from '../services/blogs'
+import { useDispatch } from "react-redux";
+import { addLike, incrementLike } from '../reducers/blogReducer';
+ 
 const Blog = ({ blog, token, blogRefresh, user }) => {
   const blogStyle = {
     paddingTop: 10,
@@ -10,13 +13,12 @@ const Blog = ({ blog, token, blogRefresh, user }) => {
     borderWidth: 1,
     marginBottom: 5
   }
-  const [likes, setLikes] = useState(blog.likes)
+  const dispatch = useDispatch()
   const [visible, setVisible] = useState(true)
   const handleLikes = async () => {
-    blog.likes += 1
+    dispatch(incrementLike(blog, token))
     if (token){
-      const updatedBlog = await blogService.addLike(token, blog)
-      setLikes(updatedBlog.likes)
+      await blogService.addLike(token, blog)
       blogRefresh()
     } else {
       blogRefresh()
@@ -37,7 +39,7 @@ const Blog = ({ blog, token, blogRefresh, user }) => {
             {blog.url}
           </div>
           <div id={`${blog.title}_likes`}>
-        likes {likes}
+        likes {blog.likes}
             <button id={`${blog.title}-like-button`} onClick={handleLikes}>like</button>
           </div>
           {blog.user.username!==user.username ? null :
