@@ -9,6 +9,8 @@ import { useDispatch, useSelector } from "react-redux";
 import { setBlog } from "./reducers/blogReducer";
 import { setNotification, setError } from "./reducers/messageReducer";
 import { setUser, removeUser } from "./reducers/userReducer";
+import { useMatch, Routes, Route, Link, useNavigate} from "react-router-dom";
+import User from './components/User';
 
 
 
@@ -18,10 +20,55 @@ const App = () => {
   const isError = useSelector(state=>state.message[1])
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const user = useSelector(state=>state.user);
+  const user = useSelector(state=>state.user[0]);
   const [heading, setHeading] = useState("log in to application");
   const dispatch = useDispatch()
 
+  const Menu = () => {
+    console.log('where am i')
+    const padding = {
+      paddingRight: 5
+    }
+    return (
+      <div>
+        <div>
+          <Link style={padding} to="/">blogs</Link>
+          <Link style={padding} to="/users">users</Link>
+        </div>
+        <Routes>
+          <Route path="/users" element={<User/>}/>
+          <Route path="/" element={<Blogs/>}/>
+        </Routes>
+      </div>
+    )
+  }
+
+  const Blogs = () => {
+    return (
+      <div>
+        {user===null ? (
+        null
+      ): (
+        <Togglable
+        buttonLabel="new blog"
+        closeButtonLabel="cancel"
+        ref={blogFormRef}>
+        <BlogForm createBlog={createBlog} />
+        </Togglable>
+      )}
+
+      {blogs.map((blog) => (
+        <Blog
+          key={blog.id}
+          user={user}
+          blog={blog}
+          token={user.token}
+          blogRefresh={blogRefresh}
+        />
+      ))}
+      </div>
+    )
+  }
 
   //login logic
   const sendLogin = async (event) => {
@@ -136,26 +183,12 @@ const App = () => {
         loginForm()
       ) : (
         <div>
-          <p>{user.name} logged in</p>{" "}
+          <div> {user.name} logged in
           <button onClick={handleLogout}>logout</button>
-          <Togglable
-            buttonLabel="new blog"
-            closeButtonLabel="cancel"
-            ref={blogFormRef}
-          >
-            <BlogForm createBlog={createBlog} />
-          </Togglable>
+          <Menu />
+          </div>
         </div>
       )}
-      {blogs.map((blog) => (
-        <Blog
-          key={blog.id}
-          user={user}
-          blog={blog}
-          token={user.token}
-          blogRefresh={blogRefresh}
-        />
-      ))}
     </div>
   );
 };
