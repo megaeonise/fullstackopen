@@ -15,11 +15,17 @@ const blogSlice = createSlice({
         addLike(state, action){
             state.find((blog)=> blog.id===action.payload).likes += 1
             return state
+        },
+        appendComment(state, action){
+            console.log(action.payload)
+            let commentedBlog = state.find((blog)=> blog.id===action.payload[0])
+            commentedBlog.comments.push(action.payload[1])
+            return state
         }
     }
 })
 
-export const {setBlog, addLike} = blogSlice.actions
+export const {setBlog, addLike, appendComment} = blogSlice.actions
 
 export const incrementLike = (blog, token) => {
     return async dispatch => {
@@ -27,6 +33,15 @@ export const incrementLike = (blog, token) => {
         let newBlog = Object.assign({}, blog)
         newBlog.likes += 1
         await blogService.addLike(token, newBlog)
+    }
+}
+
+export const addComment = (blog, token, comment) => {
+    return async dispatch => {
+        dispatch(appendComment([blog.id, comment]))
+        let newBlog = structuredClone(blog)
+        newBlog.comments.push(comment)
+        await blogService.addComment(token, newBlog)
     }
 }
 

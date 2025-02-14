@@ -19,6 +19,7 @@ blogsRouter.post("/blogs", async (request, response) => {
     url: request.body.url,
     user: user.id,
     likes: request.body.likes,
+    comments: request.body.comments
   });
 
   const savedBlog = await blog.save();
@@ -52,6 +53,22 @@ blogsRouter.put("/blogs/:id", async (request, response) => {
     author: request.body.author,
     url: request.body.url,
     likes: request.body.likes,
+    comments: request.body.comments
+  };
+  const result = await Blog.findByIdAndUpdate(request.params.id, newBlog, {
+    new: true,
+    runValidators: true,
+  });
+  response.json(result);
+});
+
+blogsRouter.put("/blogs/:id/comments", async (request, response) => {
+  const newBlog = {
+    title: request.body.title,
+    author: request.body.author,
+    url: request.body.url,
+    likes: request.body.likes,
+    comments: request.body.comments
   };
   const result = await Blog.findByIdAndUpdate(request.params.id, newBlog, {
     new: true,

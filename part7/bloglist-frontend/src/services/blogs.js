@@ -23,6 +23,16 @@ const addBlog = (token, blog) => {
   return request.then((response) => response.data);
 };
 
+const addComment = (token, blog) => {
+  const url = baseUrl + `/${blog.id}/comments`;
+  const request = axios.put(url, blog, {
+    headers: {
+      Authorization: "Bearer " + token,
+    },
+  });
+  return request.then((response) => response.data);
+};
+
 const addLike = (token, blog) => {
   const url = baseUrl + `/${blog.id}`;
   const request = axios.put(url, blog, {
@@ -43,4 +53,4 @@ const deleteBlog = (token, blogId) => {
   return request.then((response) => response.data);
 };
 
-export default { getAll, addBlog, addLike, deleteBlog };
+export default { getAll, addBlog, addLike, deleteBlog, addComment };

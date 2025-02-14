@@ -30,7 +30,6 @@ const App = () => {
   
   useEffect(()=>{
       loginService.getAll().then((users)=>dispatch(setUsers(users)))
-      console.log(users)
   }, [])
 
   const Menu = () => {
@@ -39,7 +38,6 @@ const App = () => {
     }
     if(users!==null){
       console.log(blogs)
-      console.log([].length)
       const userMatch = useMatch('/users/:id')
       const blogMatch = useMatch('/blogs/:id')
       const matchedUser = userMatch ? users.find(user=>user.id === userMatch.params.id) : null

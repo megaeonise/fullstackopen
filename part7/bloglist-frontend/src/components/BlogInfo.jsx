@@ -1,18 +1,19 @@
 import { Link } from "react-router-dom"
-import { useDispatch } from "react-redux";
-import { incrementLike } from '../reducers/blogReducer';
+import { useDispatch, useSelector } from "react-redux";
+import { incrementLike, addComment } from '../reducers/blogReducer';
 import { useNavigate } from "react-router-dom";
 import blogService from '../services/blogs'
+import { useState } from "react";
 
 
 const BlogInfo = ({blog, blogRefresh, user, token}) => {
     const dispatch = useDispatch()
     const navigate = useNavigate()
+    const [comment, setComment] = useState("")
 
-    const handleLikes = async () => {
-    dispatch(incrementLike(blog, token))
+    const handleLikes = () => {
     if (token){
-        await blogService.addLike(token, blog)
+        dispatch(incrementLike(blog, token))
     }
     }
 
@@ -22,6 +23,14 @@ const BlogInfo = ({blog, blogRefresh, user, token}) => {
             blogRefresh()
             navigate('/')
         }
+    }
+
+    const handleComment = (event) => {
+        event.preventDefault()
+        if(token){
+            dispatch(addComment(blog, token, comment))
+        }
+        setComment("")
     }
 
     if(!blog){
@@ -39,6 +48,23 @@ const BlogInfo = ({blog, blogRefresh, user, token}) => {
         </div>
         <div>
             added by {blog.author}
+        </div>
+        <div>
+            <h3>comments</h3>
+            <form onSubmit={handleComment}>
+                <input
+                id="comment"
+                className="comment"
+                type="text"
+                value={comment}
+                onChange={({target}) => setComment(target.value)} 
+                />
+                <button id="create" type="submit">add comment</button>
+            </form>
+            <ul>
+                {blog.comments.map((comment)=> 
+                <li key={Math.floor((Math.random() * 10000) + 1)}>{comment}</li>)}
+            </ul>
         </div>
         {blog.user.username!==user.username ? null :
             <div id="blog_delete">
