@@ -12,6 +12,7 @@ import { setUser, removeUser, setUsers } from "./reducers/userReducer";
 import { Routes, Route, Link, useNavigate, useMatch } from "react-router-dom";
 import User from './components/User';
 import UserInfo from "./components/UserInfo";
+import BlogInfo from "./components/BlogInfo";
 
 
 
@@ -33,15 +34,16 @@ const App = () => {
   }, [])
 
   const Menu = () => {
-
-    console.log('where am i')
     const padding = {
       paddingRight: 5
     }
     if(users!==null){
+      console.log(blogs)
+      console.log([].length)
       const userMatch = useMatch('/users/:id')
+      const blogMatch = useMatch('/blogs/:id')
       const matchedUser = userMatch ? users.find(user=>user.id === userMatch.params.id) : null
-      console.log(userMatch, matchedUser, 'matchingstuff', users)
+      const matchedBlog = blogMatch ? blogs.find(blog=>blog.id === blogMatch.params.id) : null
       return (
         <div>
           <div>
@@ -51,7 +53,8 @@ const App = () => {
           <Routes>
             <Route path="/users" element={<User users={users}/>}/>
             <Route path="/" element={<Blogs/>}/>
-            <Route path="/users/:id" element={<UserInfo user={matchedUser}/>}/>  
+            <Route path="/users/:id" element={<UserInfo user={matchedUser}/>}/>
+            <Route path="/blogs/:id" element={<BlogInfo blog={matchedBlog} blogRefresh={blogRefresh} user={user} token={user.token}/>}/>   
           </Routes>
         </div>
       )
@@ -66,6 +69,7 @@ const App = () => {
         <Route path="/users" element={<User users={users}/>}/>
         <Route path="/" element={<Blogs/>}/>
         <Route path="/users/:id" element={<UserInfo user={null}/>}/>
+        <Route path="/blogs/:id" element={<BlogInfo blog={null}/>}/>
       </Routes>
     </div>
     )
@@ -74,6 +78,7 @@ const App = () => {
   const Blogs = () => {
     return (
       <div>
+        <div>
         {user===null ? (
         null
       ): (
@@ -84,16 +89,15 @@ const App = () => {
         <BlogForm createBlog={createBlog} />
         </Togglable>
       )}
-
+      </div>
+      <div>
       {blogs.map((blog) => (
         <Blog
           key={blog.id}
-          user={user}
           blog={blog}
-          token={user.token}
-          blogRefresh={blogRefresh}
         />
       ))}
+            </div>
       </div>
     )
   }
@@ -118,14 +122,12 @@ const App = () => {
       blogRefresh();
     } catch (exception) {
       dispatch(setError(true));
-      blogRefresh();
       dispatch(setNotification("wrong username or password",5000));
     }
     console.log("logging in with", username);
   };
   //blog creation handling
   const createBlog = async (blog) => {
-    console.log()
     try {
       await blogService.addBlog(user.token, blog);
       blogFormRef.current.toggleVisibility();
