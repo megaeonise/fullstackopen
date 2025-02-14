@@ -8,9 +8,10 @@ import BlogForm from "./components/BlogForm";
 import { useDispatch, useSelector } from "react-redux";
 import { setBlog } from "./reducers/blogReducer";
 import { setNotification, setError } from "./reducers/messageReducer";
-import { setUser, removeUser } from "./reducers/userReducer";
-import { useMatch, Routes, Route, Link, useNavigate} from "react-router-dom";
+import { setUser, removeUser, setUsers } from "./reducers/userReducer";
+import { Routes, Route, Link, useNavigate, useMatch } from "react-router-dom";
 import User from './components/User';
+import UserInfo from "./components/UserInfo";
 
 
 
@@ -21,25 +22,52 @@ const App = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const user = useSelector(state=>state.user[0]);
+  const users = useSelector(state=>state.user[1])
   const [heading, setHeading] = useState("log in to application");
   const dispatch = useDispatch()
 
+  
+  useEffect(()=>{
+      loginService.getAll().then((users)=>dispatch(setUsers(users)))
+      console.log(users)
+  }, [])
+
   const Menu = () => {
+
     console.log('where am i')
     const padding = {
       paddingRight: 5
     }
+    if(users!==null){
+      const userMatch = useMatch('/users/:id')
+      const matchedUser = userMatch ? users.find(user=>user.id === userMatch.params.id) : null
+      console.log(userMatch, matchedUser, 'matchingstuff', users)
+      return (
+        <div>
+          <div>
+            <Link style={padding} to="/">blogs</Link>
+            <Link style={padding} to="/users">users</Link>
+          </div>
+          <Routes>
+            <Route path="/users" element={<User users={users}/>}/>
+            <Route path="/" element={<Blogs/>}/>
+            <Route path="/users/:id" element={<UserInfo user={matchedUser}/>}/>  
+          </Routes>
+        </div>
+      )
+    }
     return (
       <div>
-        <div>
-          <Link style={padding} to="/">blogs</Link>
-          <Link style={padding} to="/users">users</Link>
-        </div>
-        <Routes>
-          <Route path="/users" element={<User/>}/>
-          <Route path="/" element={<Blogs/>}/>
-        </Routes>
+      <div>
+        <Link style={padding} to="/">blogs</Link>
+        <Link style={padding} to="/users">users</Link>
       </div>
+      <Routes>
+        <Route path="/users" element={<User users={users}/>}/>
+        <Route path="/" element={<Blogs/>}/>
+        <Route path="/users/:id" element={<UserInfo user={null}/>}/>
+      </Routes>
+    </div>
     )
   }
 
@@ -97,9 +125,10 @@ const App = () => {
   };
   //blog creation handling
   const createBlog = async (blog) => {
+    console.log()
     try {
-      blogFormRef.current.toggleVisibility();
       await blogService.addBlog(user.token, blog);
+      blogFormRef.current.toggleVisibility();
       dispatch(setError(false))
       dispatch(setNotification(`a new blog ${blog.title} by ${blog.author} added`,5000));
       blogRefresh();
