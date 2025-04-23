@@ -1,25 +1,6 @@
 import { gql, useQuery } from "@apollo/client";
 import { useState, useEffect } from "react";
-const ALL_BOOKS = gql`
-  query AllBooks($genre: String) {
-    allBooks(genre: $genre) {
-      title
-      author {
-        name
-      }
-      published
-      id
-    }
-  }
-`;
-const GENRE_INFO = gql`
-  query {
-    me {
-      favoriteGenre
-      id
-    }
-  }
-`;
+import { ALL_BOOKS, GENRE_INFO } from "../queries";
 const Recommend = ({ token }) => {
   if (!token) {
     return null;

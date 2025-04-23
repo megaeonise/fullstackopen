@@ -1,25 +1,7 @@
-import { gql, useMutation, useQuery } from "@apollo/client";
+import { useMutation, useQuery } from "@apollo/client";
 import { useState } from "react";
 
-const ALL_AUTHORS = gql`
-  query {
-    allAuthors {
-      name
-      born
-      bookCount
-      id
-    }
-  }
-`;
-
-const EDIT_AUTHOR = gql`
-  mutation ($name: String!, $setBornTo: Int!) {
-    editAuthor(name: $name, setBornTo: $setBornTo) {
-      name
-      born
-    }
-  }
-`;
+import { ALL_AUTHORS, EDIT_AUTHOR } from "../queries";
 
 const Authors = (props) => {
   // if (!props.show) {
@@ -38,9 +20,13 @@ const Authors = (props) => {
     },
     update: (cache, response) => {
       cache.updateQuery({ query: ALL_AUTHORS }, ({ allAuthors }) => {
-        console.log(response.data.editAuthor, allAuthors);
+        const updatedAuthors = allAuthors.map((author) =>
+          author.name === response.data.editAuthor.name
+            ? response.data.editAuthor
+            : author
+        );
         return {
-          allAuthors: allAuthors.concat(response.data.editAuthor),
+          allAuthors: updatedAuthors,
         };
       });
     },

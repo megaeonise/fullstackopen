@@ -1,25 +1,7 @@
-import { gql, useQuery } from "@apollo/client";
+import { useQuery, useSubscription } from "@apollo/client";
 import { useState } from "react";
-const ALL_BOOKS = gql`
-  query ($author: String, $genre: String) {
-    allBooks(author: $author, genre: $genre) {
-      title
-      author {
-        name
-      }
-      published
-      id
-      genres
-    }
-  }
-`;
-const GENRES = gql`
-  query ($author: String, $genre: String) {
-    allBooks(author: $author, genre: $genre) {
-      genres
-    }
-  }
-`;
+import { ALL_BOOKS, GENRES, BOOK_ADDED } from "../queries";
+
 const Books = (props) => {
   if (!props.show) {
     return null;
@@ -31,6 +13,19 @@ const Books = (props) => {
   });
   const bookGenres = useQuery(GENRES, {
     pollInterval: 2000,
+  });
+
+  useSubscription(BOOK_ADDED, {
+    onData: ({ data, client }) => {
+      console.log(data, client);
+      client.cache.inspectFields("Query");
+      client.cache.updateQuery({ query: ALL_BOOKS }, (data) => {
+        console.log(data, "WHY");
+        // return {
+        //   allBooks: allBooks.concat(addedBook),
+        // };
+      });
+    },
   });
   if (result.loading || bookGenres.loading) {
     return <div>loading...</div>;

@@ -5,13 +5,22 @@ import NewBook from "./components/NewBook";
 import Login from "./components/Login";
 import { Routes, Route, useNavigate } from "react-router-dom";
 import Recommend from "./components/Recommend";
-import { useApolloClient } from "@apollo/client";
+import { useApolloClient, useSubscription } from "@apollo/client";
+
+import { BOOK_ADDED } from "./queries";
 
 const App = () => {
   const [page, setPage] = useState("authors");
   const [token, setToken] = useState(null);
   const navigate = useNavigate();
   const client = useApolloClient();
+
+  useSubscription(BOOK_ADDED, {
+    onData: ({ data }) => {
+      console.log(data);
+      window.alert(`${data.data.bookAdded.title} has been added`);
+    },
+  });
 
   return (
     <div>
@@ -65,6 +74,7 @@ const App = () => {
         {token && (
           <button
             onClick={() => {
+              setPage("authors");
               setToken(null);
               localStorage.removeItem("library-user-token");
               client.resetStore();
