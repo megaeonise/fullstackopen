@@ -52,9 +52,10 @@ const Authors = (props) => {
 
   const submit = async (event) => {
     event.preventDefault();
-    await editAuthor({ variables: { name, setBornTo: parseInt(born) } });
-
-    setBorn("");
+    if (name !== "") {
+      await editAuthor({ variables: { name, setBornTo: parseInt(born) } });
+      setBorn("");
+    }
   };
 
   return (
@@ -80,6 +81,7 @@ const Authors = (props) => {
         <form onSubmit={submit}>
           <h2>Set birthyear</h2>
           <select value={name} onChange={(e) => setName(e.target.value)}>
+            <option>select author</option>
             {authors.map((a) => (
               <option key={a.id} value={a.name}>
                 {a.name}
