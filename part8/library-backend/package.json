@@ -1,0 +1,22 @@
+{
+  "name": "part8",
+  "version": "1.0.0",
+  "main": "library-backend.js",
+  "scripts": {
+    "server": "nodemon library-backend.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "@apollo/server": "^4.12.0",
+    "dotenv": "^16.5.0",
+    "graphql": "^16.10.0",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^7.8.6",
+    "mongoose-unique-validator": "^4.0.1",
+    "nodemon": "^3.1.9",
+    "uuid": "^11.1.0"
+  }
+}
