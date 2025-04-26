@@ -54,6 +54,11 @@ const client = new ApolloClient({
               return incoming;
             },
           },
+          allBooks: {
+            merge(existing, incoming) {
+              return incoming;
+            },
+          },
         },
       },
     },

@@ -39,20 +39,13 @@ const resolvers = {
   },
   Author: {
     bookCount: async (root) => {
-      const books = await Book.find({}).populate("author");
-      let count = 0;
-      for (let i = 0; i < books.length; i++) {
-        if (books[i].author.name === root.name) {
-          count++;
-        }
-      }
-      return count;
+      console.log("root");
+      return root.books.length;
     },
   },
   Mutation: {
     addBook: async (root, args, context) => {
       const currentUser = context.currentUser;
-      console.log(args);
       if (!currentUser) {
         throw new GraphQLError("not authenticated", {
           extensions: {
@@ -65,12 +58,14 @@ const resolvers = {
       const book_id = uuid().split("-").join("").slice(0, 24);
       const book = new Book({ ...args, _id: book_id });
       const author = await Author.findOne({ name: author_name });
+      console.log(author);
 
       if (!author) {
         // const author_id = uuid().split("-").join("").slice(0, 24);
         const author = new Author({
           name: author_name,
           _id: author_id,
+          book: [book_id],
         });
         try {
           await author.save();
@@ -85,6 +80,7 @@ const resolvers = {
         }
       } else {
         author_id = author._id;
+        author.books.push(book_id);
         try {
           await author.save();
         } catch (error) {

@@ -1,32 +1,38 @@
-import { useQuery, useSubscription } from "@apollo/client";
-import { useState } from "react";
-import { ALL_BOOKS, GENRES, BOOK_ADDED } from "../queries";
+import { useQuery } from "@apollo/client";
+import { ALL_BOOKS, GENRES } from "../queries";
 
 const Books = (props) => {
   if (!props.show) {
     return null;
   }
-  const [genreFilter, setGenreFilter] = useState("");
   const result = useQuery(ALL_BOOKS, {
-    variables: { genre: genreFilter },
+    variables: { genre: props.genreFilter },
     pollInterval: 2000,
   });
   const bookGenres = useQuery(GENRES, {
     pollInterval: 2000,
   });
 
-  useSubscription(BOOK_ADDED, {
-    onData: ({ data, client }) => {
-      console.log(data, client);
-      client.cache.inspectFields("Query");
-      client.cache.updateQuery({ query: ALL_BOOKS }, (data) => {
-        console.log(data, "WHY");
-        // return {
-        //   allBooks: allBooks.concat(addedBook),
-        // };
-      });
-    },
-  });
+  // useSubscription(BOOK_ADDED, {
+  //   onData: ({ data, client }) => {
+  //     console.log(data, client);
+  //     client.cache.updateQuery(
+  //       {
+  //         query: ALL_BOOKS,
+  //         variables: {
+  //           genre: genreFilter,
+  //         },
+  //       },
+  //       (data) => {
+  //         console.log(data, "WHY");
+  //         // return {
+  //         //   allBooks: allBooks.concat(addedBook),
+  //         // };
+  //       }
+  //     );
+  //   },
+  // });
+
   if (result.loading || bookGenres.loading) {
     return <div>loading...</div>;
   }
@@ -47,9 +53,9 @@ const Books = (props) => {
   return (
     <div>
       <h2>books</h2>
-      {genreFilter && (
+      {props.genreFilter && (
         <div>
-          in genre <b>{genreFilter}</b>
+          in genre <b>{props.genreFilter}</b>
         </div>
       )}
       <table>
@@ -72,7 +78,7 @@ const Books = (props) => {
         <button
           key={genre}
           onClick={() => {
-            setGenreFilter(genre);
+            props.setGenreFilter(genre);
             result.refetch();
           }}
         >
@@ -81,7 +87,7 @@ const Books = (props) => {
       ))}
       <button
         onClick={() => {
-          setGenreFilter("");
+          props.setGenreFilter("");
           result.refetch();
         }}
       >
