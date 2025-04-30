@@ -35,7 +35,7 @@ const parseArgumentsExercise = (args: string[]): exerciseValues => {
 }
 
 
-const calculateExercises = (week: number[], target: number): Result => {
+export const calculateExercises = (week: number[], target: number): Result => {
     if (week.filter((day)=>day<0).length>0) {
         throw new Error('Provided hours had hours less than 0!')
     }

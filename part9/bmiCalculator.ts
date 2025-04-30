@@ -19,7 +19,7 @@ const parseArgumentsBMI = (args: string[]): bmiValues => {
     }
 }
 
-const calculateBmi = (cm: number, kg:number): string => {
+export const calculateBmi = (cm: number, kg:number): string => {
     const bmi = kg/((cm/100)**2)
     if (bmi<16) {
         return "Underweight (Severe thinness)"
@@ -47,16 +47,18 @@ const calculateBmi = (cm: number, kg:number): string => {
     }
     return "No BMI"
 }
+if(require.main === module){
+    try {
+        const { cm, kg } = parseArgumentsBMI(process.argv);
+        console.log(calculateBmi(cm, kg));
+      } catch (error: unknown) {
+        let errorMessage = 'Something bad happened.'
+        if (error instanceof Error) {
+          errorMessage += ' Error: ' + error.message;
+        }
+        console.log(errorMessage);
+      }
+}
 
-try {
-    const { cm, kg } = parseArgumentsBMI(process.argv);
-    console.log(calculateBmi(cm, kg));
-  } catch (error: unknown) {
-    let errorMessage = 'Something bad happened.'
-    if (error instanceof Error) {
-      errorMessage += ' Error: ' + error.message;
-    }
-    console.log(errorMessage);
-  }
 
 // console.log(calculateBmi(180, 91))
