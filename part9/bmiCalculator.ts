@@ -1,18 +1,18 @@
 //formula for bmi is kg/m^2
 
-interface Values {
-    value1: number;
-    value2: number
+interface bmiValues {
+    cm: number;
+    kg: number
 }
 
-const parseArguments = (args: string[]): Values => {
+const parseArgumentsBMI = (args: string[]): bmiValues => {
     if (args.length<4) throw new Error('Not enough arguments');
     if (args.length>4) throw new Error('Too many arguments');
 
     if (!isNaN(Number(args[2])) && !isNaN(Number(args[3]))) {
         return {
-            value1: Number(args[2]),
-            value2: Number(args[3])
+            cm: Number(args[2]),
+            kg: Number(args[3])
         }
     } else {
         throw new Error('Provided values were not numbers!')
@@ -20,7 +20,7 @@ const parseArguments = (args: string[]): Values => {
 }
 
 const calculateBmi = (cm: number, kg:number): string => {
-    const bmi = kg/((cm/100)^2)
+    const bmi = kg/((cm/100)**2)
     if (bmi<16) {
         return "Underweight (Severe thinness)"
     }
@@ -45,18 +45,18 @@ const calculateBmi = (cm: number, kg:number): string => {
     else if (bmi>=40) {
         return "Obese (Class III)"
     }
-
+    return "No BMI"
 }
 
-// try {
-//     const { value1, value2 } = parseArguments(process.argv);
-//     calculateBmi(value1, value2);
-//   } catch (error: unknown) {
-//     let errorMessage = 'Something bad happened.'
-//     if (error instanceof Error) {
-//       errorMessage += ' Error: ' + error.message;
-//     }
-//     console.log(errorMessage);
-//   }
+try {
+    const { cm, kg } = parseArgumentsBMI(process.argv);
+    console.log(calculateBmi(cm, kg));
+  } catch (error: unknown) {
+    let errorMessage = 'Something bad happened.'
+    if (error instanceof Error) {
+      errorMessage += ' Error: ' + error.message;
+    }
+    console.log(errorMessage);
+  }
 
-console.log(calculateBmi(180, 74))
+// console.log(calculateBmi(180, 91))
