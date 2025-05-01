@@ -8,20 +8,31 @@ interface Result {
     average: number
 }
 
-interface exerciseValues {
+export interface exerciseValues {
     week: number[];
     target: number;
 }
 
-const parseArgumentsExercise = (args: string[]): exerciseValues => {
+export const parseArgumentsExercise = (args: (string|number)[]): exerciseValues => {
     if (args.length<4) throw new Error('Not enough arguments');
     // if (args.length>10) throw new Error('Too many arguments');
     const exerciseValues: exerciseValues = {week: [], target: 0};
-    const hours: string[] = args.slice(3);
-    if (!isNaN(Number(args[2]))) {
-        exerciseValues.target = Number(args[2]);
-    } else {
-        throw new Error('Provided values were not numbers!');
+    let hours: (string|number)[] = []
+    if(require.main === module) {
+        hours = args.slice(3);
+        if (!isNaN(Number(args[2]))) {
+            exerciseValues.target = Number(args[2]);
+        } else {
+            throw new Error('Provided values were not numbers!');
+        }
+    }
+    else{
+        hours = args.slice(1)
+        if (!isNaN(Number(args[0]))) {
+            exerciseValues.target = Number(args[0]);
+        } else {
+            throw new Error('Provided values were not numbers!');
+        }
     }
     hours.forEach((hour) => {
         if(!isNaN(Number(hour))){
@@ -80,15 +91,18 @@ export const calculateExercises = (week: number[], target: number): Result => {
     };
 };
 
-try {
-    const { week, target } = parseArgumentsExercise(process.argv);
-    console.log(calculateExercises(week, target));
-  } catch (error: unknown) {
-    let errorMessage = 'Something bad happened.';
-    if (error instanceof Error) {
-      errorMessage += ' Error: ' + error.message;
-    }
-    console.log(errorMessage);
-  }
+if(require.main === module) {
+    try {
+        const { week, target } = parseArgumentsExercise(process.argv);
+        console.log(calculateExercises(week, target));
+      } catch (error: unknown) {
+        let errorMessage = 'Something bad happened.';
+        if (error instanceof Error) {
+          errorMessage += ' Error: ' + error.message;
+        }
+        console.log(errorMessage);
+      }
+}
+
 
 // console.log(calculateExercises([3, 0, 2, 4.5, 0, 3, 1], 2))
