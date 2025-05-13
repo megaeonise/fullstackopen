@@ -1,5 +1,11 @@
 // export type DiagnosisFields = 'code' | 'name' | 'latin'
 
+export enum Gender {
+    Male = 'male',
+    Female = 'female',
+    Other = 'other'
+}
+
 export interface Diagnosis {
     code: string,
     name: string,
