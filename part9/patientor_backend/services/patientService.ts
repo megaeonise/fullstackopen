@@ -9,14 +9,22 @@ const getPatient = (): NonSsnPatient[] => {
         name,
         dateOfBirth,
         gender,
-        occupation
+        occupation,
+        entries: []
     }));
+}
+
+const getOnePatient = ( id: string ): Patient => {
+    const patient = patientData.filter((p) => p.id === id)[0]
+    patient.entries = []
+    return patient;
 }
 
 const addPatient = ( patient: NewPatient ): Patient => {
     const id = uuid();
     const newPatient = {
         id: id,
+        entries: [],
         ...patient
     };
     patientData.push(newPatient);
@@ -30,5 +38,6 @@ const getAllPatientData = (): Patient[] => {
 export default {
     getPatient,
     getAllPatientData,
-    addPatient
+    addPatient,
+    getOnePatient
 }
