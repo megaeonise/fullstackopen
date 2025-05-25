@@ -1,4 +1,4 @@
-import { NewPatient, Gender } from './types';
+import { NewPatient, Gender, HealthCheckRating } from './types';
 import { z } from 'zod';
 
 // const isString = (text: unknown): text is string => {
@@ -54,7 +54,28 @@ export const newPatientSchema = z.object({
     ssn: z.string(),
     gender: z.nativeEnum(Gender),
     occupation: z.string(),
-})
+    entries: z.array(z.object({
+      id: z.string(),
+      description: z.string(),
+      date: z.string(),
+      specialist: z.string(),
+      diagnosisCodes: z.optional(z.array(z.string())),
+      type: z.enum(["HealthCheck", "OccupationalHealthcare", "Hospital"]),
+      healthCheckRating: z.optional(z.nativeEnum(HealthCheckRating)),
+      employerName: z.optional(z.string()),
+      sickLeave: z.optional(z.object({
+        startDate: z.string(),
+        endDate: z.string()
+      })),
+      discharge: z.optional(z.object({
+        date: z.string(),
+        criteria: z.string()
+      }))
+    }))
+    // entries: z.array(z.object({
+    //   type: z.enum(["HealthCheck", "OccupationalHealthcare", "Hospital"]),
+    // }))
+  })
 
 const toNewPatient = (object: unknown): NewPatient => {
   // if ( !object || typeof object !== 'object' ) {
@@ -71,7 +92,7 @@ const toNewPatient = (object: unknown): NewPatient => {
   // return newPatient;
   // }
   // throw new Error('Incorrect data: some fields are missing');
-  return newPatientSchema.parse(object);
+  return newPatientSchema.passthrough().parse(object);
 };
 
 export default toNewPatient;
