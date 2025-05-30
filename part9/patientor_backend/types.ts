@@ -44,8 +44,8 @@ interface OccupationalHealthcareEntry extends BaseEntry {
 }
 
 interface HospitalEntry extends BaseEntry {
-    type: "Hospital";
-    discharge: Discharge;
+  type: "Hospital";
+  discharge: Discharge;
 }
 
 export type Entry =
@@ -71,5 +71,5 @@ export interface Patient {
 
 export type NonSsnPatient = Omit<Patient, "ssn">;
 export type NewPatient = z.infer<typeof newPatientSchema>; 
-// type UnionOmit<T, K extends string | number | symbol> = T extends unknown ? Omit<T, K> : never;
-// type EntryWithoutId = UnionOmit<Entry, 'id'>;
+type UnionOmit<T, K extends string | number | symbol> = T extends unknown ? Omit<T, K> : never;
+export type EntryWithoutId = UnionOmit<Entry, 'id'>;

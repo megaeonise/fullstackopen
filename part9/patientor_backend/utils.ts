@@ -49,33 +49,51 @@ import { z } from 'zod';
 // };
 
 export const newPatientSchema = z.object({
-    name: z.string(),
-    dateOfBirth: z.string().date(),
-    ssn: z.string(),
+    name: z.string().trim().min(1),
+    dateOfBirth: z.string().date().trim().min(1),
+    ssn: z.string().trim().min(1),
     gender: z.nativeEnum(Gender),
-    occupation: z.string(),
-    entries: z.array(z.object({
-      id: z.string(),
-      description: z.string(),
-      date: z.string(),
-      specialist: z.string(),
-      diagnosisCodes: z.optional(z.array(z.string())),
+    occupation: z.string().trim().min(1),
+    entries: z.optional(z.array(z.object({
+      id: z.string().trim().min(1),
+      description: z.string().trim().min(1),
+      date: z.string().date().trim().min(1),
+      specialist: z.string().trim().min(1),
+      diagnosisCodes: z.optional(z.array(z.string().trim().min(1))),
       type: z.enum(["HealthCheck", "OccupationalHealthcare", "Hospital"]),
       healthCheckRating: z.optional(z.nativeEnum(HealthCheckRating)),
-      employerName: z.optional(z.string()),
+      employerName: z.optional(z.string().trim().min(1)),
       sickLeave: z.optional(z.object({
-        startDate: z.string(),
-        endDate: z.string()
+        startDate: z.string().date().trim().min(1),
+        endDate: z.string().date().trim().min(1)
       })),
       discharge: z.optional(z.object({
-        date: z.string(),
-        criteria: z.string()
+        date: z.string().date().trim().min(1),
+        criteria: z.string().trim().min(1)
       }))
-    }))
+    })))
     // entries: z.array(z.object({
     //   type: z.enum(["HealthCheck", "OccupationalHealthcare", "Hospital"]),
     // }))
   })
+
+export const newEntrySchema = z.object({
+  description: z.string().trim().min(1),
+  date: z.string().date().trim().min(1),
+  specialist: z.string().trim().min(1),
+  diagnosisCodes: z.optional(z.array(z.string().trim().min(1))),
+  type: z.enum(["HealthCheck", "OccupationalHealthcare", "Hospital"]),
+  healthCheckRating: z.optional(z.nativeEnum(HealthCheckRating)),
+  employerName: z.optional(z.string().trim().min(1)),
+  sickLeave: z.optional(z.object({
+    startDate: z.string().date().trim().min(1),
+    endDate: z.string().date().trim().min(1)
+  })),
+  discharge: z.optional(z.object({
+    date: z.string().date().trim().min(1),
+    criteria: z.string().trim().min(1)
+  }))
+})
 
 const toNewPatient = (object: unknown): NewPatient => {
   // if ( !object || typeof object !== 'object' ) {
