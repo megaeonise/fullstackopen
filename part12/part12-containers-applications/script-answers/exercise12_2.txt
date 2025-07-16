@@ -1,0 +1,16 @@
+docker container run -it ubuntu bash
+ls
+mkdir us
+ls usr
+ls games
+cd usr
+cd games
+ls
+cd ..
+mkdir src/app
+ls
+ls src
+cd src/app
+touch index.js
+ls
+exit
