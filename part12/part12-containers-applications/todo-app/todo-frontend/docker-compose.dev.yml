@@ -4,10 +4,21 @@ services:
     build:
       context: . # The context will pick this directory as the "build context"
       dockerfile: dev.Dockerfile # This will simply tell which dockerfile to read
+      args:
+        VITE_BACKEND_URL: http://localhost:3000
     volumes:
       - ./:/usr/src/app
     ports:
       - 5173:5173
     container_name: hello-front-dev # This will name the container hello-front-dev
+  nginx:
+    image: nginx:1.20.1
+    volumes:
+      - ./nginx.dev.conf:/etc/nginx/nginx.conf:ro
+    ports:
+      - 8080:80
+    container_name: reverse-proxy
+    depends_on:
+      - app # wait for the frontend container to be started
   debug-helper:    
       image: busybox
