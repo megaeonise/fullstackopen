@@ -21,7 +21,6 @@ router.post("/", async (req, res) => {
   } else {
     await setAsync("added_todos", Number(counter) + 1);
   }
-  console.log(counter);
   res.send(todo);
 });
 

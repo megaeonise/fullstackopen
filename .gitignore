@@ -16,6 +16,8 @@ dist-ssr
 *.local
 mongo_data
 .mongo_data
+redis_data
+.redis_data
 
 # Editor directories and files
 .vscode/*
