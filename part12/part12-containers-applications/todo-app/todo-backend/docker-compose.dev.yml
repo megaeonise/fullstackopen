@@ -1,4 +1,20 @@
 services:
+  server:
+    image: todo-backend
+    build:
+      context: . # The context will pick this directory as the "build context"
+      dockerfile: dev.Dockerfile # This will simply tell which dockerfile to read
+    volumes:
+      - ./:/usr/src/app
+    ports:
+      - 3000:3000
+    container_name: hello-back-dev
+    environment:
+      - REDIS_URL=redis://redis:6379
+      - MONGO_URL=mongodb://the_username:the_password@mongo:27017/the_database
+  debug-helper:    
+      image: busybox
+
   mongo:
     image: mongo
     ports:
