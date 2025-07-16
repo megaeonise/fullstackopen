@@ -1,0 +1,9 @@
+services:
+  app:                    
+    image: todo-frontend
+    build: .
+      # context: .
+      # target: test-stage
+    ports:                
+      - 8000:80
+    
