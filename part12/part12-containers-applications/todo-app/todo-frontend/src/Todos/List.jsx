@@ -21,7 +21,7 @@ const TodoList = ({ todos, deleteTodo, completeTodo }) => {
           />
         ))
         // eslint-disable-next-line react/jsx-key
-        .reduce((acc, cur) => [...acc, <hr />, cur], [])}
+        .reduce((acc, cur) => [...acc, <hr key={Math.random()} />, cur], [])}
     </>
   );
 };
