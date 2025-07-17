@@ -4,8 +4,6 @@ services:
     build:
       context: ./bloglist-frontend # The context will pick this directory as the "build context"
       dockerfile: dev.Dockerfile
-      args:
-        VITE_BACKEND_URL: http://localhost:8080/api/
     volumes:
       - ./bloglist-frontend:/usr/src/app
     container_name: tested-bloglist-frontend-dev # This will name the container todo-front-dev

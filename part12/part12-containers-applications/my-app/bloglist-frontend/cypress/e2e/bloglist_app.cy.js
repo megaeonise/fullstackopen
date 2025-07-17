@@ -1,6 +1,6 @@
 describe("Blog app", function () {
   beforeEach(function () {
-    cy.request("POST", "http://localhost:3003/api/testing/reset");
+    cy.request("POST", "http://test-server:3000/api/testing/reset");
     const user = {
       username: "blogtester",
       name: "blogger",
@@ -10,14 +10,14 @@ describe("Blog app", function () {
   });
 
   it("Login form is shown", function () {
-    cy.visit("http://[::1]:5173");
+    cy.visit("http://app:5173");
     cy.contains("log in to application");
     cy.contains("log in").click();
   });
 
   describe("Login", function () {
     it("succeeds with correct credentials", function () {
-      cy.visit("http://[::1]:5173");
+      cy.visit("http://app:5173");
       cy.contains("log in").click();
       cy.get("#username").type("blogtester");
       cy.get("#password").type("iheartblogs");
@@ -28,7 +28,7 @@ describe("Blog app", function () {
     });
 
     it("fails with wrong credentials", function () {
-      cy.visit("http://[::1]:5173");
+      cy.visit("http://app:5173");
       cy.contains("log in").click();
       cy.get("#username").type("newuser");
       cy.get("#password").type("wrongpassword");
