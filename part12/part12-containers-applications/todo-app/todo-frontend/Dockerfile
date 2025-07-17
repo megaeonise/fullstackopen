@@ -17,8 +17,8 @@ COPY . .
 RUN npm prune --production
 
 COPY --from=test-stage /usr/src/app /usr/src/app
-
-RUN VITE_BACKEND_URL=http://localhost:3000/ npm run build
+ARG VITE_BACKEND_URL
+RUN VITE_BACKEND_URL=${VITE_BACKEND_URL} npm run build
 
 FROM nginx:1.25-alpine
 
