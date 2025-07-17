@@ -5,7 +5,7 @@ WORKDIR /usr/src/app
 COPY --chown=node:node . .
 RUN npm ci 
 
-ENV DEBUG=app:*
+ENV NODE_ENV production
 
 USER node
 CMD npm start

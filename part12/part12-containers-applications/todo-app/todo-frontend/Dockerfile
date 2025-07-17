@@ -18,7 +18,9 @@ RUN npm prune --production
 
 COPY --from=test-stage /usr/src/app /usr/src/app
 ARG VITE_BACKEND_URL
+ENV NODE_ENV production
 RUN VITE_BACKEND_URL=${VITE_BACKEND_URL} npm run build
+
 
 FROM nginx:1.25-alpine
 

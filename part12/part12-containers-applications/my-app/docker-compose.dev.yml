@@ -1,0 +1,37 @@
+services:
+  app:
+    image: tested-blog-frontend
+    build:
+      context: ./bloglist-frontend # The context will pick this directory as the "build context"
+      dockerfile: dev.Dockerfile
+      args:
+        VITE_BACKEND_URL: http://localhost:8080/api/
+    volumes:
+      - ./bloglist-frontend:/usr/src/app
+    container_name: tested-bloglist-frontend-dev # This will name the container todo-front-dev
+    depends_on:
+      - server
+  server:
+    image: tested-blog-backend
+    build:
+      context: ./bloglist-backend # The context will pick this directory as the "build context"
+      dockerfile: dev.Dockerfile # This will simply tell which dockerfile to read
+    volumes:
+      - ./bloglist-backend:/usr/src/app
+    container_name: tested-bloglist-backend-dev
+    environment:
+      - PORT=${PORT}
+      - MONGODB_URI=${MONGODB_URI}
+      - TEST_MONGODB_URI=${TEST_MONGODB_URI}
+      - SECRET=${SECRET}
+  nginx:
+    image: nginx:1.20.1
+    volumes:
+      - ./nginx.dev.conf:/etc/nginx/nginx.conf:ro
+    ports:
+      - 8080:80
+    container_name: reverse-proxy-tested-bloglist
+    depends_on:
+      - app
+  debug-helper:    
+      image: busybox
